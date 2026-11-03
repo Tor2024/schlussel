@@ -1,0 +1,2469 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SCHLÜSSEL GmbH Kreuztal — Sicherheit ist ein Handwerk</title>
+<meta name="description" content="Schlüssel GmbH Kreuztal — Schließanlagen, Schlüsselnotdienst und Türen. Wir zeigen Ihnen, was hinter dem Schloss passiert. Meisterbetrieb im Kreis Siegen-Wittgenstein.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='38' cy='38' r='22' fill='none' stroke='%2306B6D4' stroke-width='5'/><path d='M58 62 L88 92 M74 76 L64 86 M84 66 L74 76' stroke='%230E7490' stroke-width='8' stroke-linecap='round' fill='none'/></svg>">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Jost:wght@300;400;500&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+
+<style>
+/* ============================================================
+   SCHLÜSSEL GMBH — HOLO EDITION
+   White lab space · floating holographic screens
+   Luminescent cyan, grounded by deep navy shadows
+   ============================================================ */
+:root{
+  --bg:#FAFBFD;          /* clinic white */
+  --bg-2:#EDF2F8;        /* soft blue tint */
+  --navy:#0B2E4F;        /* trust navy */
+  --slate:#47586E;       /* slate blue */
+  --mist:#8CA0B3;
+  --cyan:#0EA5E9;        /* medical blue */
+  --cyan-bright:#38BDF8; /* luminous highlight */
+  --cyan-dark:#0284C7;
+  --cyan-ink:#075985;
+  --blue:#1D4ED8;
+
+  --holo-fill:rgba(2,132,199,.05);
+  --holo-border:rgba(14,165,232,.45);
+  --holo-glow:0 0 22px rgba(56,189,248,.28);
+  --holo-shadow:0 14px 40px rgba(11,46,79,.10), 0 2px 6px rgba(11,46,79,.06);
+
+  --f-disp:"Rajdhani", sans-serif;
+  --f-ui:"Jost", sans-serif;
+  --f-mono:"JetBrains Mono", monospace;
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:var(--bg);
+  color:var(--slate);
+  font-family:var(--f-ui);
+  font-weight:300;
+  font-size:clamp(16px,1.3vw,18px);
+  line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+::selection{background:rgba(56,189,248,.35);color:var(--navy)}
+
+/* ---------- stage layers ---------- */
+.stage-bg{
+  position:fixed;inset:0;z-index:0;
+  background:
+    radial-gradient(40% 32% at 78% 16%, rgba(56,189,248,.07), transparent 70%),
+    radial-gradient(30% 28% at 10% 82%, rgba(29,78,216,.06), transparent 70%),
+    radial-gradient(90% 70% at 50% 30%, #FFFFFF 0%, #F7FAFC 55%, #EDF2F7 100%);
+}
+/* faint blueprint grid on the whole space */
+.stage-grid{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(14,165,232,.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(14,165,232,.05) 1px, transparent 1px);
+  background-size:72px 72px;
+  mask-image:radial-gradient(75% 65% at 50% 42%, #000 30%, transparent 100%);
+  -webkit-mask-image:radial-gradient(75% 65% at 50% 42%, #000 30%, transparent 100%);
+  animation:gridDrift 30s linear infinite;
+}
+@keyframes gridDrift{from{background-position:0 0,0 0}to{background-position:72px 72px,72px 72px}}
+/* living background: aurora blobs + telemetry columns */
+.aurora{position:fixed;inset:0;z-index:0;pointer-events:none;filter:blur(64px);opacity:.6}
+.aurora i{position:absolute;border-radius:50%}
+.aurora i:nth-child(1){width:46vw;height:46vw;left:-12vw;top:-14vw;background:radial-gradient(circle, rgba(56,189,248,.11), transparent 65%);animation:aur1 21s ease-in-out infinite alternate}
+.aurora i:nth-child(2){width:40vw;height:40vw;right:-12vw;bottom:-16vw;background:radial-gradient(circle, rgba(29,78,216,.09), transparent 65%);animation:aur2 27s ease-in-out infinite alternate}
+@keyframes aur1{to{transform:translate(9vw,7vh) scale(1.18)}}
+@keyframes aur2{to{transform:translate(-8vw,-6vh) scale(.88)}}
+.bg-data{
+  position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;
+  font-family:var(--f-mono);font-size:9px;letter-spacing:.16em;line-height:2.2;
+  color:rgba(7,101,133,.32);
+}
+.bg-data .col{position:absolute;bottom:-32%;white-space:pre;animation:colRise linear infinite}
+.bg-data .col.c1{left:3vw;animation-duration:46s}
+.bg-data .col.c2{right:4vw;animation-duration:58s;animation-delay:-24s}
+.bg-data .col.c3{left:46vw;opacity:.55;animation-duration:52s;animation-delay:-37s}
+@keyframes colRise{from{transform:translateY(0)}to{transform:translateY(-135vh)}}
+@media (max-width:760px){ .bg-data .col.c2,.bg-data .col.c3{display:none} }
+#gl{position:fixed;inset:0;z-index:1;pointer-events:none}
+#gl canvas{display:block;filter:drop-shadow(0 0 5px rgba(56,189,248,.22)) drop-shadow(0 0 22px rgba(56,189,248,.13))}
+@media(max-width:768px){#gl canvas{filter:drop-shadow(0 0 4px rgba(56,189,248,.2))}}
+#labels{position:fixed;inset:0;z-index:2;pointer-events:none;overflow:hidden}
+
+/* ---------- cinematic overlays: vignette + film grain ---------- */
+.vignette{
+  position:fixed;inset:0;z-index:4;pointer-events:none;
+  background:radial-gradient(120% 100% at 50% 42%, transparent 55%, rgba(11,46,79,.10) 88%, rgba(11,46,79,.16) 100%);
+  mix-blend-mode:multiply;
+}
+.grain{
+  position:fixed;inset:-100px;z-index:5;pointer-events:none;opacity:.05;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation:grainShift 0.9s steps(4) infinite;
+}
+@keyframes grainShift{
+  0%{transform:translate(0,0)}25%{transform:translate(-32px,18px)}
+  50%{transform:translate(20px,-26px)}75%{transform:translate(-14px,-8px)}100%{transform:translate(0,0)}
+}
+@media (prefers-reduced-motion:reduce){.grain{animation:none}}
+/* ghost chapter number, huge, barely there */
+.ghost-no{
+  position:absolute;top:8svh;right:2vw;z-index:-1;
+  font-family:var(--f-disp);font-weight:700;font-size:clamp(160px,26vw,420px);
+  line-height:1;color:transparent;
+  -webkit-text-stroke:1px rgba(14,165,232,.14);
+  pointer-events:none;user-select:none;
+  letter-spacing:-.02em;
+}
+
+/* ---------- CAD holo labels ---------- */
+.cad-label{
+  font-family:var(--f-mono);font-weight:500;font-size:10.5px;letter-spacing:.08em;
+  color:var(--cyan-ink);
+  background:rgba(255,255,255,.85);
+  border:1px solid var(--holo-border);
+  border-radius:3px;
+  padding:4px 10px;
+  white-space:nowrap;
+  box-shadow:var(--holo-glow), 0 3px 10px rgba(11,46,79,.08);
+  display:flex;align-items:center;gap:7px;
+  opacity:0;
+  backdrop-filter:blur(4px);
+}
+.cad-label::before{content:"";width:5px;height:5px;background:var(--cyan);transform:rotate(45deg);flex:none;box-shadow:0 0 6px var(--cyan-bright)}
+
+/* ---------- technical HUD (drawing frame) ---------- */
+.hud-tech{
+  position:fixed;z-index:16;pointer-events:none;
+  font-family:var(--f-mono);font-size:10px;letter-spacing:.12em;
+  color:var(--cyan-ink);opacity:0;transition:opacity .6s;
+}
+.hud-tech.on{opacity:.85}
+.hud-coords{left:clamp(16px,3vw,40px);bottom:22px;line-height:1.7}
+.hud-coords b{color:var(--cyan-dark);font-weight:500}
+.hud-cross{
+  top:50%;left:50%;transform:translate(-50%,-50%);
+  width:34px;height:34px;
+}
+.hud-cross::before,.hud-cross::after{content:"";position:absolute;background:rgba(14,165,232,.4)}
+.hud-cross::before{left:50%;top:0;width:1px;height:100%}
+.hud-cross::after{top:50%;left:0;height:1px;width:100%}
+.hud-cross i{position:absolute;inset:0;border:1px solid rgba(14,165,232,.35);border-radius:50%;animation:hudSpin 14s linear infinite}
+.hud-cross i:nth-child(2){inset:5px;border-style:dashed;animation-duration:22s;animation-direction:reverse}
+@keyframes hudSpin{to{transform:rotate(360deg)}}
+@media (max-width:760px){ .hud-coords{display:none} .hud-cross{opacity:0 !important} }
+.cad-label.titleblock{
+  text-align:right;line-height:1.75;transform:translateX(100%);
+  margin-right:-240px; /* anchored right edge at anchor point */
+  transform-origin:right center;white-space:nowrap;
+}
+.cad-label.dim{font-weight:600;color:var(--cyan-dark)}
+.cad-label.zone{
+  min-width:0;padding:1px 5px;font-size:9px;opacity:0;
+  box-shadow:none;background:rgba(255,255,255,.6);
+}
+.cad-label.bom{
+  min-width:0;width:20px;height:20px;padding:0;border-radius:50%;
+  justify-content:center;font-weight:600;font-size:10px;
+  color:var(--cyan-dark);border-color:rgba(14,165,232,.6);
+  background:rgba(255,255,255,.9);
+}
+.cad-label.bom::before{display:none}
+/* BOM parts list (drawing sheet panel) */
+.bom-panel{
+  position:fixed;right:clamp(16px,4vw,56px);bottom:clamp(90px,16vh,160px);z-index:16;
+  font-family:var(--f-mono);font-size:10px;letter-spacing:.1em;
+  color:var(--cyan-ink);opacity:0;transition:opacity .8s;
+  border:1px solid rgba(14,165,232,.3);background:rgba(255,255,255,.75);
+  backdrop-filter:blur(6px);padding:10px 14px;line-height:2;
+  box-shadow:0 4px 18px rgba(11,46,79,.07);
+}
+.bom-panel.on{opacity:.9}
+.bom-panel b{font-weight:600;color:var(--navy)}
+.bom-panel .bp-t{letter-spacing:.22em;color:var(--cyan-dark);margin-bottom:4px;font-size:9px}
+.bom-panel .bp-r{display:flex;gap:12px;align-items:center}
+.bom-panel .bp-r.cur{color:var(--navy);font-weight:600}
+.bom-panel .bp-r .n{display:inline-flex;width:15px;height:15px;border:1px solid rgba(14,165,232,.55);border-radius:50%;align-items:center;justify-content:center;font-size:8.5px}
+.bom-panel .bp-r .q{color:var(--cyan-dark)}
+
+/* ---------- nav ---------- */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:20;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 clamp(16px,3vw,40px);height:60px;
+  background:rgba(251,252,254,.7);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid rgba(14,165,232,.18);
+}
+.nav-logo{display:flex;align-items:baseline;gap:10px;text-decoration:none}
+.nav-logo b{font-family:var(--f-disp);font-weight:700;font-size:17px;letter-spacing:.16em;color:var(--navy)}
+.nav-logo span{font-family:var(--f-mono);font-weight:400;font-size:9px;letter-spacing:.26em;color:var(--cyan-dark)}
+.nav-links{display:flex;gap:clamp(14px,2vw,26px)}
+.nav-links a{
+  font-family:var(--f-disp);font-weight:600;font-size:13px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--slate);text-decoration:none;padding:6px 2px;transition:color .3s;
+}
+.nav-links a:hover{color:var(--cyan-dark);text-shadow:0 0 12px rgba(56,189,248,.5)}
+.nav-tools{display:flex;gap:10px;align-items:center}
+#soundBtn{
+  font-family:var(--f-mono);font-size:10px;letter-spacing:.16em;color:var(--slate);
+  background:transparent;cursor:pointer;border:1px solid rgba(70,88,110,.25);border-radius:4px;
+  padding:6px 11px;display:flex;align-items:center;gap:8px;transition:all .3s;
+}
+#soundBtn:hover{border-color:var(--cyan);color:var(--cyan-dark)}
+#soundBtn.on{color:var(--cyan-dark);border-color:var(--cyan);box-shadow:var(--holo-glow)}
+#soundBtn .eq{display:inline-flex;gap:2px;align-items:flex-end;height:10px}
+#soundBtn .eq i{width:2px;background:currentColor;height:3px;transition:height .3s}
+#soundBtn.on .eq i{animation:eq .9s ease-in-out infinite}
+#soundBtn.on .eq i:nth-child(2){animation-delay:.2s}
+#soundBtn.on .eq i:nth-child(3){animation-delay:.4s}
+@keyframes eq{0%,100%{height:3px}50%{height:10px}}
+.nav-phone{
+  font-family:var(--f-mono);font-size:12px;font-weight:500;color:var(--cyan-ink);text-decoration:none;
+  border:1px solid var(--holo-border);border-radius:4px;padding:6px 12px;
+  box-shadow:var(--holo-glow);transition:all .3s;
+}
+.nav-phone:hover{background:var(--cyan);color:#fff;border-color:var(--cyan)}
+@media(max-width:900px){.nav-links{display:none}}
+
+/* ---------- progress rail ---------- */
+.rail{position:fixed;right:clamp(10px,2vw,26px);top:50%;transform:translateY(-50%);z-index:15;display:flex;flex-direction:column;gap:14px}
+.rail a{display:flex;align-items:center;gap:9px;text-decoration:none;font-family:var(--f-mono);font-size:9px;letter-spacing:.18em;color:var(--slate);opacity:.5;transition:all .3s}
+.rail a i{width:6px;height:6px;border:1px solid currentColor;border-radius:50%;flex:none;transition:all .3s}
+.rail a span{opacity:0;transform:translateX(4px);transition:all .3s}
+.rail a:hover span,.rail a.cur span{opacity:1;transform:none}
+.rail a.cur{opacity:1;color:var(--cyan-dark)}
+.rail a.cur i{background:currentColor;transform:scale(1.3);box-shadow:0 0 8px var(--cyan-bright)}
+@media(max-width:768px){.rail{display:none}}
+
+/* ---------- story / scenes ---------- */
+#story{position:relative;z-index:3}
+.scene{position:relative}
+.scene-inner{position:sticky;top:0;min-height:100svh;display:flex;align-items:center;padding:96px clamp(20px,6vw,90px) 48px}
+.scene#dienst{min-height:auto}
+.scene#dienst .scene-inner{position:static;display:block;padding-bottom:40px}
+
+.copy{max-width:560px}
+.copy.right{margin-left:auto}
+.kicker{
+  font-family:var(--f-mono);font-size:10.5px;font-weight:500;letter-spacing:.3em;
+  color:var(--cyan-dark);text-transform:uppercase;
+  display:inline-flex;align-items:center;gap:12px;margin-bottom:20px;
+}
+.kicker::before,.kicker::after{content:"";height:1px;width:30px;background:linear-gradient(90deg,var(--cyan),transparent)}
+.kicker::after{background:linear-gradient(90deg,transparent,var(--cyan))}
+.kicker::before{background:linear-gradient(90deg,transparent,var(--cyan));width:22px}
+h2.disp{
+  font-family:var(--f-disp);font-weight:600;
+  font-size:clamp(36px,4.6vw,60px);line-height:1.08;letter-spacing:.01em;
+  color:var(--navy);margin-bottom:18px;
+}
+h2 em,h1 em{font-style:normal;color:var(--cyan-dark);text-shadow:0 0 26px rgba(56,189,248,.45)}
+
+/* word-mask reveal */
+.wm{display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:.1em;margin-bottom:-.1em}
+.wm-w{display:inline-block;transform:translateY(112%)}
+
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .7s cubic-bezier(.22,.61,.36,1),transform .7s cubic-bezier(.22,.61,.36,1)}
+.reveal.is-in{opacity:1;transform:none}
+/* idle hover for holo panels (subtle levitation) */
+@keyframes holoIdle{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+.reveal.holo.is-in{animation:holoIdle 7s ease-in-out infinite}
+.reveal.holo.card.is-in:nth-child(2){animation-delay:1.2s}
+.reveal.holo.card.is-in:nth-child(3){animation-delay:2.4s}
+@media (prefers-reduced-motion:reduce){.reveal.holo.is-in{animation:none}}
+
+/* ---------- hero ---------- */
+.hero-copy{max-width:880px}
+h1.disp-1{
+  font-family:var(--f-disp);font-weight:700;
+  font-size:clamp(52px,8vw,118px);line-height:1.02;letter-spacing:.005em;
+  color:var(--navy);
+}
+.hero-sub{margin-top:24px;max-width:580px;color:var(--slate)}
+.hero-meta{
+  margin-top:30px;font-family:var(--f-mono);font-size:11px;font-weight:400;
+  letter-spacing:.22em;color:var(--slate);display:flex;flex-wrap:wrap;gap:10px 26px;
+}
+.hero-meta b{color:var(--cyan-dark);font-weight:500;text-shadow:0 0 10px rgba(56,189,248,.5)}
+.scroll-hint{
+  position:absolute;bottom:32px;left:50%;transform:translateX(-50%);
+  font-family:var(--f-mono);font-size:9px;letter-spacing:.34em;color:var(--cyan-dark);
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+}
+.scroll-hint::after{content:"";width:1px;height:42px;background:linear-gradient(var(--cyan),transparent);animation:hint 2.2s cubic-bezier(.22,.61,.36,1) infinite}
+@keyframes hint{0%{transform:scaleY(0);transform-origin:top}45%{transform:scaleY(1);transform-origin:top}55%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+
+/* ---------- HOLO PANELS (floating screens) ---------- */
+.holo{
+  position:relative;
+  background:var(--holo-fill);
+  border:1px solid var(--holo-border);
+  border-radius:6px;
+  padding:22px 26px;
+  box-shadow:var(--holo-glow), var(--holo-shadow);
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  transition:transform .5s cubic-bezier(.22,.61,.36,1),box-shadow .5s;
+}
+/* materialize: clip-path boot-in when revealed */
+.reveal.holo{clip-path:inset(0 100% 0 0)}
+.reveal.holo.is-in{clip-path:inset(-30px -30px);transition:clip-path .9s cubic-bezier(.65,0,.35,1),opacity .7s cubic-bezier(.22,.61,.36,1),transform .7s cubic-bezier(.22,.61,.36,1)}
+@media (prefers-reduced-motion:reduce){.reveal.holo{clip-path:none}.reveal.holo.is-in{clip-path:none}}
+/* corner brackets */
+.holo::before,.holo::after{
+  content:"";position:absolute;width:14px;height:14px;pointer-events:none;
+  border:2px solid var(--cyan);filter:drop-shadow(0 0 4px rgba(56,189,248,.8));
+}
+.holo::before{top:-2px;left:-2px;border-right:none;border-bottom:none;border-radius:6px 0 0 0}
+.holo::after{bottom:-2px;right:-2px;border-left:none;border-top:none;border-radius:0 0 6px 0}
+/* scanline film */
+.holo .scan{
+  position:absolute;inset:0;border-radius:6px;pointer-events:none;overflow:hidden;
+  background:repeating-linear-gradient(0deg, rgba(14,165,232,.045) 0 1px, transparent 1px 4px);
+}
+/* sweep line */
+.holo .sweep{
+  position:absolute;left:0;right:0;height:1px;pointer-events:none;
+  background:linear-gradient(90deg,transparent,rgba(56,189,248,.85),transparent);
+  box-shadow:0 0 12px rgba(56,189,248,.7);
+  animation:sweep 4.5s cubic-bezier(.4,0,.6,1) infinite;
+}
+@keyframes sweep{0%{top:-2%;opacity:0}12%{opacity:1}50%{top:102%;opacity:1}62%{opacity:0}100%{top:102%;opacity:0}}
+@media (prefers-reduced-motion:reduce){.holo .sweep{display:none}}
+
+.stack{display:flex;flex-direction:column;gap:16px;margin-top:30px;max-width:480px}
+.card{display:flex;gap:18px;align-items:baseline;animation-delay:0s}
+.holo.card:nth-child(1){animation-delay:.2s}
+.holo.card:nth-child(2){animation-delay:.9s}
+.holo.card:nth-child(3){animation-delay:1.6s}
+.holo .float-wrap{width:100%}
+.card .no{font-family:var(--f-mono);font-size:10.5px;font-weight:500;color:var(--cyan-dark);letter-spacing:.12em;flex:none;text-shadow:0 0 8px rgba(56,189,248,.6)}
+.card h3{font-family:var(--f-disp);font-weight:600;font-size:19px;letter-spacing:.16em;color:var(--navy);margin-bottom:3px}
+.card p{font-size:14.5px;color:var(--slate);line-height:1.55}
+.card .rule{width:26px;height:2px;background:var(--cyan);box-shadow:0 0 8px var(--cyan-bright);margin:7px 0 6px}
+
+/* ---------- services / CTA ---------- */
+.services{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:40px}
+@media(max-width:900px){.services{grid-template-columns:1fr}}
+.svc{padding:26px 24px 22px}
+.svc .no{font-family:var(--f-mono);font-size:10.5px;font-weight:500;color:var(--cyan-dark);letter-spacing:.12em}
+.svc h3{font-family:var(--f-disp);font-weight:600;font-size:21px;letter-spacing:.06em;color:var(--navy);margin:9px 0 2px}
+.svc .rule{width:26px;height:2px;background:var(--cyan);box-shadow:0 0 8px var(--cyan-bright);margin:9px 0}
+.svc p{font-size:14.5px;color:var(--slate)}
+
+.cta-box{
+  margin-top:48px;border-radius:10px;
+  padding:clamp(26px,4vw,48px);
+  display:flex;flex-wrap:wrap;align-items:center;gap:26px 40px;
+  background:linear-gradient(160deg, rgba(2,132,199,.08), rgba(2,132,199,.03));
+}
+.cta-box .cta-txt{flex:1 1 320px}
+.cta-box h3{font-family:var(--f-disp);font-weight:600;font-size:clamp(28px,3.2vw,42px);color:var(--navy);line-height:1.1}
+.cta-live{margin-top:12px;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.14em;color:var(--cyan-dark);display:flex;align-items:center;gap:9px}
+.cta-live i{width:7px;height:7px;border-radius:50%;background:var(--cyan-bright);box-shadow:0 0 10px var(--cyan-bright);animation:pulse 1.8s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.cta-actions{display:flex;flex-direction:column;gap:12px;min-width:250px}
+.btn-primary{
+  font-family:var(--f-disp);font-weight:600;font-size:17px;letter-spacing:.1em;
+  color:#fff;background:linear-gradient(160deg,#0E7490,#155E75);
+  border:1px solid rgba(56,189,248,.6);border-radius:6px;padding:15px 30px;cursor:pointer;
+  text-decoration:none;text-align:center;
+  box-shadow:0 0 24px rgba(56,189,248,.35), 0 8px 24px rgba(11,46,79,.25);
+  transition:all .35s cubic-bezier(.22,.61,.36,1);
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 40px rgba(56,189,248,.55), 0 12px 30px rgba(11,46,79,.3);border-color:var(--cyan-bright)}
+.cta-box.hint .btn-primary{animation:ctaGlow 2.4s ease-in-out infinite}
+@keyframes ctaGlow{0%,100%{box-shadow:0 0 24px rgba(56,189,248,.35),0 8px 24px rgba(11,46,79,.25)}50%{box-shadow:0 0 46px rgba(56,189,248,.65),0 8px 24px rgba(11,46,79,.25)}}
+.btn-ghost{
+  font-family:var(--f-disp);font-weight:600;font-size:15px;letter-spacing:.1em;
+  color:var(--navy);background:rgba(255,255,255,.6);
+  border:1px solid rgba(11,46,79,.25);border-radius:6px;padding:13px 30px;
+  cursor:pointer;text-decoration:none;text-align:center;transition:all .3s;
+}
+.btn-ghost:hover{border-color:var(--cyan);box-shadow:var(--holo-glow);transform:translateY(-2px)}
+.addr{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.06em;color:var(--slate);margin-top:14px}
+
+/* ---------- FAQ ---------- */
+.faq{margin-top:60px;max-width:760px}
+.faq h3.sec{font-family:var(--f-mono);font-size:10.5px;font-weight:500;letter-spacing:.3em;color:var(--cyan-dark);text-transform:uppercase;margin-bottom:8px}
+.faq details{border-top:1px solid rgba(14,165,232,.25)}
+.faq details:last-child{border-bottom:1px solid rgba(14,165,232,.25)}
+.faq summary{
+  list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:20px;
+  padding:19px 4px;font-family:var(--f-disp);font-weight:600;font-size:18px;letter-spacing:.03em;color:var(--navy);transition:color .3s;
+}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary:hover{color:var(--cyan-dark)}
+.faq summary .pm{font-family:var(--f-mono);font-weight:300;font-size:17px;color:var(--cyan-dark);flex:none;transition:transform .4s cubic-bezier(.22,.61,.36,1)}
+.faq details[open] summary .pm{transform:rotate(45deg)}
+.faq details p{padding:0 4px 21px;color:var(--slate);max-width:620px}
+
+/* ---------- footer ---------- */
+footer{
+  position:relative;z-index:3;
+  background:rgba(237,242,248,.85);border-top:1px solid rgba(14,165,232,.18);
+  backdrop-filter:blur(10px);
+  padding:32px clamp(20px,6vw,90px);
+  display:flex;flex-wrap:wrap;gap:14px 40px;justify-content:space-between;align-items:center;
+}
+footer .f-meta{font-family:var(--f-mono);font-size:10px;letter-spacing:.16em;color:var(--slate)}
+footer .f-meta b{color:var(--cyan-dark);font-weight:500}
+footer nav{display:flex;gap:22px}
+footer nav a{font-family:var(--f-disp);font-weight:600;font-size:12px;letter-spacing:.16em;color:var(--slate);text-decoration:none;text-transform:uppercase}
+footer nav a:hover{color:var(--cyan-dark)}
+
+/* ---------- intro ---------- */
+#intro{position:fixed;inset:0;z-index:60;background:var(--bg)}
+#loader{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px}
+.loader-key path,.loader-key circle{fill:none;stroke:var(--cyan);stroke-width:2.5;stroke-linecap:round;filter:drop-shadow(0 0 6px rgba(56,189,248,.8))}
+.loader-brand{font-family:var(--f-mono);font-size:10px;letter-spacing:.36em;color:var(--slate)}
+.loader-boot{font-family:var(--f-mono);font-size:9px;letter-spacing:.24em;color:var(--cyan-dark);height:14px}
+
+/* ---------- reduced motion ---------- */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .wm-w{transform:none!important}
+  .reveal{opacity:1!important;transform:none!important}
+  .scroll-hint{display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="stage-bg" aria-hidden="true"></div>
+<div class="aurora" aria-hidden="true"><i></i><i></i></div>
+<div class="stage-grid" aria-hidden="true"></div>
+<div class="bg-data" aria-hidden="true">
+  <div class="col c1">SCH-1985 · TOR 14 · SPERRE 0 · NUTZER 212 · ZYLINDER SK-31.5 · PRÜFSTAND A · 0.02 mm TOLERANZ · SCH-1985 · TOR 14 · SPERRE 0 · NUTZER 212 · ZYLINDER SK-31.5 · PRÜFSTAND A · 0.02 mm TOLERANZ · SCH-1985 · TOR 14 · SPERRE 0 · NUTZER 212</div>
+  <div class="col c2">ENTRIEGELT 07:42:19 · SCHLIESST 07:42:21 · MOMENT 3.2 Nm · ENTRIEGELT 07:42:19 · SCHLIESST 07:42:21 · MOMENT 3.2 Nm · ENTRIEGELT 07:42:19 · SCHLIESST 07:42:21 · MOMENT 3.2 Nm</div>
+  <div class="col c3">BISSUNG 1.20 · 0.95 · 1.10 · 0.85 · 0.75 · FREI · BISSUNG 1.20 · 0.95 · 1.10 · 0.85 · 0.75 · FREI · BISSUNG 1.20 · 0.95 · 1.10 · 0.85 · 0.75 · FREI</div>
+</div>
+<div id="gl" aria-hidden="true"></div>
+<div id="labels" aria-hidden="true"></div>
+<div class="hud-tech hud-coords" id="hudCoords" aria-hidden="true"></div>
+<div class="hud-tech hud-cross" id="hudCross" aria-hidden="true"><i></i><i></i></div>
+<div class="bom-panel" id="bomPanel" aria-hidden="true">
+  <div class="bp-t">STÜCKLISTE · SK-1985-05</div>
+  <div class="bp-r" data-n="1"><span class="n">1</span><b>SCHLÜSSEL</b> <span class="q">× 1</span></div>
+  <div class="bp-r" data-n="2"><span class="n">2</span><b>ZYLINDERKERNE</b> <span class="q">× 1</span></div>
+  <div class="bp-r" data-n="3"><span class="n">3</span><b>GEHÄUSE</b> <span class="q">× 1</span></div>
+  <div class="bp-r" data-n="4"><span class="n">4</span><b>STIFT-SATZ</b> <span class="q">× 5</span></div>
+</div>
+<div class="vignette" aria-hidden="true"></div>
+<div class="grain" aria-hidden="true"></div>
+
+<!-- ============ NAV ============ -->
+<header class="nav">
+  <a class="nav-logo" href="#titel"><b>SCHLÜSSEL GmbH</b><span>MEISTERBETRIEB</span></a>
+  <nav class="nav-links" aria-label="Hauptnavigation">
+    <a href="#profil">Profil</a>
+    <a href="#zylinder">Zylinder</a>
+    <a href="#mechanik">Mechanik</a>
+    <a href="#klick">Klick</a>
+    <a href="#dienst">Dienst</a>
+  </nav>
+  <div class="nav-tools">
+    <button id="soundBtn" type="button" aria-pressed="false" aria-label="Ton einschalten">
+      <span class="eq" aria-hidden="true"><i></i><i></i><i></i></span><span id="soundLbl">TON AUS</span>
+    </button>
+    <!-- PLACEHOLDER: Telefonnummer -->
+    <a class="nav-phone" href="tel:+4927325501020">02732 550 10 20</a>
+  </div>
+</header>
+
+<!-- ============ RAIL ============ -->
+<nav class="rail" aria-label="Kapitel">
+  <a href="#titel" data-rail="0"><i></i><span>00 TITEL</span></a>
+  <a href="#profil" data-rail="1"><i></i><span>01 PROFIL</span></a>
+  <a href="#zylinder" data-rail="2"><i></i><span>02 ZYLINDER</span></a>
+  <a href="#mechanik" data-rail="3"><i></i><span>03 MECHANIK</span></a>
+  <a href="#klick" data-rail="4"><i></i><span>04 KLICK</span></a>
+  <a href="#dienst" data-rail="5"><i></i><span>05 DIENST</span></a>
+</nav>
+
+<!-- ============ INTRO ============ -->
+<div id="intro" aria-hidden="true">
+  <div id="loader">
+    <svg class="loader-key" width="240" height="120" viewBox="0 0 240 120">
+      <circle cx="66" cy="58" r="24"/>
+      <circle cx="66" cy="58" r="9"/>
+      <path d="M90 58 H206"/>
+      <path d="M150 58 V74"/>
+      <path d="M174 58 V80"/>
+      <path d="M198 58 V72"/>
+    </svg>
+    <div class="loader-brand">SCHLÜSSEL GMBH · KREUZTAL</div>
+    <div class="loader-boot" id="bootTxt">SYSTEM START…</div>
+  </div>
+</div>
+
+<!-- ============ STORY ============ -->
+<main id="story">
+
+  <!-- SCENE 0 · TITEL -->
+  <section id="titel" class="scene" style="min-height:130svh">
+    <div class="scene-inner">
+      <div class="hero-copy">
+        <div class="kicker reveal">Schlüssel GmbH · Kreuztal</div>
+        <h1 class="disp-1" id="heroH1">
+          <span class="wm"><span class="wm-w">Sicherheit</span></span>
+          <span class="wm"><span class="wm-w">ist</span></span>
+          <span class="wm"><span class="wm-w">ein</span></span>
+          <span class="wm"><span class="wm-w"><em>Handwerk.</em></span></span>
+        </h1>
+        <p class="hero-sub reveal" data-at="0.35">Schlüssel GmbH Kreuztal — Schließanlagen, Schlüsselnotdienst und Türen.
+        Wir zeigen Ihnen, was hinter dem Schloss passiert.</p>
+        <div class="hero-meta reveal" data-at="0.6">
+          <span><b>24/7</b> NOTDIENST</span>
+          <span>MEISTERBETRIEB</span>
+          <span>KREIS SIEGEN-WITTGENSTEIN</span>
+        </div>
+      </div>
+      <div class="scroll-hint" aria-hidden="true">SCROLL</div>
+    </div>
+  </section>
+
+  <!-- SCENE 1 · DAS PROFIL -->
+  <section id="profil" class="scene" style="min-height:240svh">
+    <div class="ghost-no" aria-hidden="true">01</div>
+    <div class="scene-inner">
+      <div class="copy">
+        <div class="kicker reveal">Kapitel 01 — Das Profil</div>
+        <h2 class="disp" data-words>Jeder Schlüssel hat eine <em>Handschrift.</em></h2>
+        <div class="stack">
+          <article class="holo card reveal" data-at="0.22">
+            <span class="no">01</span>
+            <div><h3>BISSUNG</h3><div class="rule"></div>
+            <p>Fünf Zuhaltungen, auf ein Hundertstel Millimeter gefräst.</p></div>
+            <span class="scan" aria-hidden="true"></span><span class="sweep" aria-hidden="true"></span>
+          </article>
+          <article class="holo card reveal" data-at="0.42">
+            <span class="no">02</span>
+            <div><h3>MATERIAL</h3><div class="rule"></div>
+            <p>Messing MS-58, kalt gewalzt. Bricht nicht, verläuft nicht.</p></div>
+            <span class="scan" aria-hidden="true"></span><span class="sweep" aria-hidden="true"></span>
+          </article>
+          <article class="holo card reveal" data-at="0.62">
+            <span class="no">03</span>
+            <div><h3>PROFIL</h3><div class="rule"></div>
+            <p>Wir vermessen Ihr Schloss — der Schlüssel passt, oder er entsteht nicht.</p></div>
+            <span class="scan" aria-hidden="true"></span><span class="sweep" aria-hidden="true"></span>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCENE 2 · DER ZYLINDER -->
+  <section id="zylinder" class="scene" style="min-height:240svh">
+    <div class="ghost-no" aria-hidden="true">02</div>
+    <div class="scene-inner">
+      <div class="copy">
+        <div class="kicker reveal">Kapitel 02 — Der Zylinder</div>
+        <h2 class="disp" data-words>Fünf Zuhaltungen. Ein <em>Geheimnis.</em></h2>
+        <div class="holo reveal" data-at="0.25" style="max-width:460px;margin-top:10px">
+          <p style="font-size:15px">Im Inneren des Zylinders liegen fünf Stiftpaare. Solange sie versetzt liegen,
+          dreht sich nichts. Wir kennen jede dieser Positionen — und jeden Weg, sie zu setzen.</p>
+          <span class="scan" aria-hidden="true"></span><span class="sweep" aria-hidden="true"></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCENE 3 · DIE MECHANIK -->
+  <section id="mechanik" class="scene" style="min-height:200svh">
+    <div class="ghost-no" aria-hidden="true">03</div>
+    <div class="scene-inner">
+      <div class="copy right">
+        <div class="kicker reveal">Kapitel 03 — Die Mechanik</div>
+        <h2 class="disp" data-words>Passung auf 0,01 <em>Millimeter.</em></h2>
+        <div class="holo reveal" data-at="0.25" style="max-width:460px;margin-top:10px">
+          <p style="font-size:15px">Der Schlüssel drückt jeden Stift genau auf die Scherenlinie. Nicht tiefer,
+          nicht höher. Das ist keine Magie — das ist Messarbeit.</p>
+          <span class="scan" aria-hidden="true"></span><span class="sweep" aria-hidden="true"></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCENE 4 · DER KLICK -->
+  <section id="klick" class="scene" style="min-height:180svh">
+    <div class="ghost-no" aria-hidden="true">04</div>
+    <div class="scene-inner">
+      <div class="copy">
+        <div class="kicker reveal">Kapitel 04 — Der Klick</div>
+        <h2 class="disp" data-words data-at="0.4">25 Jahre — in einem <em>Moment.</em></h2>
+        <div class="holo reveal" data-at="0.55" style="max-width:460px;margin-top:10px">
+          <p style="font-size:15px">Wenn der Schlüssel dreht, hören Sie unsere Arbeit. Nichts wackelt, nichts
+          kratzt. Ein sauberer Lauf, ein Meistersound.</p>
+          <span class="scan" aria-hidden="true"></span><span class="sweep" aria-hidden="true"></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCENE 5 · DER DIENST -->
+  <section id="dienst" class="scene">
+    <div class="scene-inner">
+      <div class="kicker reveal">Kapitel 05 — Der Dienst</div>
+      <h2 class="disp" data-words>Der Schlüssel zu Ihrer <em>Sicherheit.</em></h2>
+
+      <div class="services">
+        <article class="holo svc reveal" data-at="0.1">
+          <span class="no">01</span>
+          <h3>Schlüsselnotdienst</h3>
+          <div class="rule"></div>
+          <p>Ausgesperrt? Wir öffnen — beschädigungsfrei, Tag und Nacht.</p>
+          <span class="scan" aria-hidden="true"></span><span class="sweep" aria-hidden="true"></span>
+        </article>
+        <article class="holo svc reveal" data-at="0.2">
+          <span class="no">02</span>
+          <h3>Schlüssel &amp; Schließanlagen</h3>
+          <div class="rule"></div>
+          <p>Vom Ersatzschlüssel bis zur Anlage mit 500 Toren — gemessen, gefräst, geplant.</p>
+          <span class="scan" aria-hidden="true"></span><span class="sweep" aria-hidden="true"></span>
+        </article>
+        <article class="holo svc reveal" data-at="0.3">
+          <span class="no">03</span>
+          <h3>Türen &amp; Montage</h3>
+          <div class="rule"></div>
+          <p>Einbau, Austausch, Panzerriegel — fachgerecht, mit Garantie.</p>
+          <span class="scan" aria-hidden="true"></span><span class="sweep" aria-hidden="true"></span>
+        </article>
+      </div>
+
+      <div class="holo cta-box reveal" data-at="0.4">
+        <div class="cta-txt">
+          <h3>Wir sind für Sie da.</h3>
+          <div class="cta-live"><i></i><span>→ ANFAHRT KREUZTAL: 22 MIN · NOTDIENST 24/7</span></div>
+          <p class="addr"><!-- PLACEHOLDER: Adresse -->
+            Bahnhofstraße 12, 57223 Kreuztal</p>
+        </div>
+        <div class="cta-actions">
+          <!-- PLACEHOLDER: Telefonnummer -->
+          <a class="btn-primary" id="ctaCall" href="tel:+4927325501020">02732 550 10 20</a>
+          <a class="btn-ghost" href="#dienst">Werkstatt besuchen</a>
+        </div>
+        <span class="scan" aria-hidden="true"></span><span class="sweep" aria-hidden="true"></span>
+      </div>
+
+      <div class="faq reveal" data-at="0.5">
+        <h3 class="sec">Häufige Fragen</h3>
+        <details>
+          <summary>Was kostet eine Türöffnung?<span class="pm">+</span></summary>
+          <p>Vor Ort-Festpreis, transparent vor der Arbeit. Ab 89 € tagsüber.</p>
+        </details>
+        <details>
+          <summary>Wie schnell sind Sie da?<span class="pm">+</span></summary>
+          <p>In Kreuztal im Schnitt 22 Minuten. Notdienst rund um die Uhr.</p>
+        </details>
+        <details>
+          <summary>Öffnen Sie ohne Schäden?<span class="pm">+</span></summary>
+          <p>Ja. 9 von 10 Öffnungen bleiben völlig ohne Schäden am Schloss.</p>
+        </details>
+        <details>
+          <summary>Machen Sie auch Schließanlagen für Firmen?<span class="pm">+</span></summary>
+          <p>Ja, von 3 bis 500 Toren — mit Meisterplanung und Wartung.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="f-meta">© 2026 SCHLÜSSEL GmbH · <b>NOTDIENST 24/7</b> · → ANFAHRT KREUZTAL: 22 MIN</div>
+  <nav aria-label="Rechtliches">
+    <a href="#dienst">Impressum</a>
+    <a href="#dienst">Datenschutz</a>
+    <a href="https://ok-studio-umber.vercel.app/" target="_blank" rel="noopener">Design &amp; Code — OK Studio</a>
+  </nav>
+</footer>
+
+<!-- ============ LIBS ============ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+
+<!-- ============ JSON-LD (PLACEHOLDER phone/address) ============ -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Locksmith",
+  "name": "SCHLÜSSEL GmbH Kreuztal",
+  "description": "Schließanlagen, Schlüsselnotdienst und Türen. Meisterbetrieb im Kreis Siegen-Wittgenstein.",
+  "telephone": "+49 2732 5501020",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Bahnhofstraße 12",
+    "postalCode": "57223",
+    "addressLocality": "Kreuztal",
+    "addressRegion": "NRW",
+    "addressCountry": "DE"
+  },
+  "areaServed": "Kreis Siegen-Wittgenstein",
+  "availableService": { "@type": "Service", "name": "Schlüsselnotdienst" }
+}
+</script>
+
+<!-- ============ APP ============ -->
+<script type="module">
+import * as THREE from 'three';
+
+gsap.registerPlugin(ScrollTrigger);
+
+const RM       = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const IS_MOBILE= matchMedia('(max-width: 768px), (pointer: coarse)').matches;
+const PARALLAX = matchMedia('(pointer: fine)').matches && !IS_MOBILE && !RM;
+
+const COL = {
+  bg:0xFAFBFD, line:0x0284C7, lineBright:0x38BDF8, cyan:0x0EA5E9,
+  face:0x0EA5E9, navy:0x0B2E4F, blue:0x1D4ED8
+};
+
+const clamp01 = v => Math.min(1, Math.max(0, v));
+const lerp    = (a,b,t) => a + (b-a)*t;
+const lerp3   = (a,b,t) => [lerp(a[0],b[0],t), lerp(a[1],b[1],t), lerp(a[2],b[2],t)];
+const smooth  = t => { t = clamp01(t); return t*t*(3-2*t); };
+const easeInOutExpo = t => { t = clamp01(t); return t < .5 ? Math.pow(t*2,4)*.5 : 1 - Math.pow((1-t)*2,4)*.5; };
+const phase = (P,a,b) => smooth(clamp01((P-a)/(b-a)));
+
+/* pin data */
+const PIN_MM = [1.20, 0.95, 1.10, 0.85, 0.75];
+const TOOTH  = PIN_MM.map(d => 0.14 + d*0.10);
+const PIN_X  = [-0.64, -0.32, 0, 0.32, 0.64];
+
+let P = 0;
+let B = [0, .02, .22, .44, .62, .78];
+const SECTIONS = [...document.querySelectorAll('#story > .scene')];
+
+function measure(){
+  const story = document.getElementById('story');
+  const total = Math.max(1, story.offsetHeight - innerHeight);
+  B = SECTIONS.map(s => clamp01(s.offsetTop / total));
+  B[0] = 0;
+  for (const el of document.querySelectorAll('.reveal')){
+    const sec = el.closest('.scene');
+    const i = SECTIONS.indexOf(sec);
+    if (i < 0) { el._th = 0; continue; }
+    const frac = parseFloat(el.dataset.at ?? '0.05');
+    const span = (i < 5 ? B[i+1] : 1) - B[i];
+    el._th = B[i] + frac * span;
+  }
+}
+
+/* ================================================================
+   THREE — HOLOGRAM SCENE (white space, cyan wireframe light)
+   ================================================================ */
+let renderer, scene, camera, labelRenderer, webgl = true;
+const assembly = new THREE.Group();
+const keyGroup = new THREE.Group();
+const cylGroup = new THREE.Group();
+const housingG = new THREE.Group();
+const plugG    = new THREE.Group();
+const pinStacks = [], holoMats = [];
+let keyPivot = null; /* key rides on the lock axis: KLICK rotation pivot */
+let dust = null, scanPlane = null, glowMat = null, rings = null, beam = null, shockwave = null, flashEl = null;
+let cadLabels = [];
+/* extended drawing layer (module scope for sceneStateAt) */
+let dimGroup = null, dims = [], axisLine = null, axisMat = null, klickArc = null, arcMat = null, spinGroup = null;
+let tickMat = null, tickMajMat = null;
+let shadowMesh = null, shadowMat = null, pathLine = null, pathMat = null;
+let sheetGroup = null, sheetMats = [], arcLabel = null;
+let secAMat = null, secBMat = null;
+let hatchMat = null;
+let bomCalls = [], keyPosLbl = null, motes = null, bboxGroup = null, bboxMats = [];
+let measRing = null, measRingMats = [];
+let bgOrbit = null, bgTopo = null, bgGears = null, bgCity = null, bgArcs = null;
+const bgFade = (g, k) => {
+  if (!g) return;
+  g.visible = k > .01;
+  if (!g.visible) return;
+  g.traverse(o => { if (o.material && o.material.userData && o.material.userData.base !== undefined) o.material.opacity = o.material.userData.base * k; });
+};
+const klickState = { v: 0 };
+
+/* holo material helpers: lines carry the light, faces are breath */
+const lineMat = (color, op) => {
+  const m = new THREE.LineBasicMaterial({ color, transparent:true, opacity:op });
+  m.userData.base = op; holoMats.push(m); return m;
+};
+const faceMat = (color, op) => {
+  const m = new THREE.MeshBasicMaterial({ color, transparent:true, opacity:op, side:THREE.DoubleSide, depthWrite:false });
+  m.userData.base = op; holoMats.push(m); return m;
+};
+/* draw-in registry: line objects that self-draw via drawRange */
+const drawLines = [];   // { line, total }
+function registerDraw(obj){
+  obj.traverse(o => {
+    if ((o.isLine || o.isLineSegments) && o.geometry){
+      const pos = o.geometry.getAttribute('position');
+      if (pos){ drawLines.push({ obj:o, total: pos.count }); }
+    }
+  });
+}
+
+try {
+  renderer = new THREE.WebGLRenderer({ antialias:true, alpha:true });
+} catch(e){ webgl = false; }
+
+if (webgl){
+  renderer.setPixelRatio(Math.min(devicePixelRatio, IS_MOBILE ? 1.75 : 2));
+  renderer.setSize(innerWidth, innerHeight);
+  document.getElementById('gl').appendChild(renderer.domElement);
+
+  scene = new THREE.Scene();
+  scene.fog = new THREE.Fog(COL.bg, 10, 20);
+
+  camera = new THREE.PerspectiveCamera(40, innerWidth/innerHeight, .1, 60);
+  camera.position.set(0, 1.4, 9.5);
+
+  /* ---- key geometry ---- */
+  function squircle(r){
+    const s = new THREE.Shape();
+    s.moveTo(0,-r);
+    s.bezierCurveTo( r*.55,-r,  r,-r*.55,  r,0);
+    s.bezierCurveTo( r, r*.55,  r*.55, r,  0, r);
+    s.bezierCurveTo(-r*.55, r, -r, r*.55, -r, 0);
+    s.bezierCurveTo(-r,-r*.55, -r*.55,-r,  0,-r);
+    return s;
+  }
+  function buildHolo(geo, group, faceOp = .05){
+    const face = new THREE.Mesh(geo, faceMat(COL.face, faceOp));
+    const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geo, 8), lineMat(COL.line, .9));
+    group.add(face, edges);
+    return { face, edges };
+  }
+  {
+    /* Blade profile — CANONICAL LOCK GEOMETRY, all parts share one axis system:
+       shear line / lock axis at y=0. Blade body BELOW axis (y -0.15..0),
+       teeth ABOVE axis (y 0..TOOTH[i]), pins rest ON the teeth at the same X. */
+    const profile = new THREE.Shape();
+    profile.moveTo(-.85, 0);
+    profile.lineTo(.9, 0);
+    for (let i = PIN_X.length-1; i >= 0; i--){
+      const x = PIN_X[i], h = TOOTH[i];
+      // teeth rising from the shear line with 45° lead-in chamfers (real key milling)
+      profile.lineTo(x+.065+.028, h-.028);
+      profile.lineTo(x+.065, h);
+      profile.lineTo(x-.065+.028, h);
+      profile.lineTo(x-.065, h);
+      profile.lineTo(x-.065-.028, 0);
+    }
+    // tip taper (keys narrow at the tip) + tip stop
+    profile.lineTo(-.85, -.02);
+    profile.lineTo(-.85, -.15);
+    profile.lineTo(.9, -.15);
+    profile.lineTo(.9, 0);
+    profile.closePath();
+    const bladeGeo = new THREE.ExtrudeGeometry(profile, { depth:.09, bevelEnabled:true, bevelThickness:.008, bevelSize:.008, bevelSegments:2, curveSegments:6 });
+    const blade = new THREE.Group();
+    buildHolo(bladeGeo, blade, .07);
+    blade.children.forEach(c => c.position.z = -.045);
+    registerDraw(blade);
+    keyGroup.add(blade);
+
+    // warranty/ID grooves milled in the blade (short bright dashes near base)
+    for (let i = 0; i < 4; i++){
+      const gx = -1.42 + i*.07;
+      const gl = new THREE.Line(new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(gx, -.12, -.046), new THREE.Vector3(gx, -.03, -.046)
+      ]), lineMat(COL.lineBright, .5));
+      keyGroup.add(gl);
+      const gr = gl.clone();
+      gr.position.z = .092;
+      keyGroup.add(gr);
+    }
+
+    // head with lanyard hole (annular cutout)
+    const headShape = squircle(.42);
+    const hole = new THREE.Path();
+    hole.absarc(0, 0, .16, 0, Math.PI*2, true);
+    headShape.holes.push(hole);
+    const headGeo = new THREE.ExtrudeGeometry(headShape, { depth:.11, bevelEnabled:true, bevelThickness:.02, bevelSize:.02, bevelSegments:2, curveSegments:20 });
+    const head = new THREE.Group();
+    buildHolo(headGeo, head, .06);
+    head.children.forEach(c => c.position.set(1.32, .07, -.055));
+    // clean the noisy edge-wireframe: curved hole rim produces "saw" hash lines.
+    // Keep only the flat front/back face outlines, drop the bevel/wall edges.
+    head.children.forEach(c => {
+      if (c.isLineSegments && c.geometry && c.geometry.attributes && c.geometry.attributes.position){
+        // rebuild edges with a high threshold so only crisp silhouette edges remain
+        c.geometry.dispose();
+        c.geometry = new THREE.EdgesGeometry(headGeo, 40);
+      }
+    });
+    registerDraw(head);
+    keyGroup.add(head);
+
+    // lanyard hole rim (bright double ring, front face only — no wall noise)
+    [.16, .185].forEach((r, i) => {
+      const rimPts = [];
+      for (let k = 0; k <= 32; k++){
+        const a = k/32*Math.PI*2;
+        rimPts.push(new THREE.Vector3(1.32 + Math.cos(a)*r, .07 + Math.sin(a)*r, 0));
+      }
+      keyGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(rimPts),
+        lineMat(COL.lineBright, i ? .4 : .9)));
+    });
+
+    // bright inner ring in the head — "power core"
+    const core = new THREE.LineSegments(
+      new THREE.EdgesGeometry(new THREE.TorusGeometry(.3, .012, 8, 48)),
+      lineMat(COL.lineBright, 1)
+    );
+    core.position.set(1.32, .07, 0);
+    keyGroup.add(core);
+
+    // head knurling: radial ticks around the head rim (grip detail)
+    for (let k = 0; k < 28; k++){
+      const a = k/28*Math.PI*2;
+      const r1 = .42, r2 = .395;
+      const g = new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(1.32+Math.cos(a)*r1, .07+Math.sin(a)*r1, 0),
+        new THREE.Vector3(1.32+Math.cos(a)*r2, .07+Math.sin(a)*r2, 0)
+      ]);
+      keyGroup.add(new THREE.LineSegments(g, lineMat(COL.line, .4)));
+    }
+
+    // teeth accent lines (bright) — outline each tooth's top plateau
+    for (let i = 0; i < 5; i++){
+      const h = TOOTH[i], x = PIN_X[i];
+      const g = new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(x-.065, h, 0), new THREE.Vector3(x+.065, h, 0),
+        new THREE.Vector3(x+.065, 0, 0)
+      ]);
+      const l = new THREE.Line(g, lineMat(COL.lineBright, .9));
+      keyGroup.add(l);
+    }
+
+    /* ---- section ribs: transverse profiles every 0.22 along the blade ----
+       classic lofting sections a naval/CAD drawing shows through a solid */
+    {
+      const ribMat = lineMat(COL.line, .28);
+      for (let x = -.8; x <= .85; x += .22){
+        // skip stations that fall inside a tooth plateau (chamfer zone reads noisy)
+        const inTooth = PIN_X.some(px => Math.abs(x - px) < .1);
+        if (inTooth) continue;
+        const g = new THREE.BufferGeometry().setFromPoints([
+          new THREE.Vector3(x, -.15, -.045), new THREE.Vector3(x, -.15, .045),
+          new THREE.Vector3(x, 0, .045),     new THREE.Vector3(x, 0, -.045),
+          new THREE.Vector3(x, -.15, -.045)
+        ]);
+        keyGroup.add(new THREE.Line(g, ribMat));
+      }
+      // longitudinal sheer line along the blade top edge (bright)
+      keyGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(-.85, 0, .045), new THREE.Vector3(.9, 0, .045)
+      ]), lineMat(COL.lineBright, .55)));
+    }
+  }
+
+  /* ---- cylinder cutaway (holo wireframe) ---- */
+  const TH_START = Math.PI*.45, TH_LEN = Math.PI*1.12;
+  {
+    cylGroup.add(housingG, plugG);
+    assembly.add(keyGroup, cylGroup);
+    scene.add(assembly);
+
+    const shellH = new THREE.CylinderGeometry(.58, .58, 2.0, 36, 1, true, TH_START, TH_LEN);
+    shellH.rotateZ(Math.PI/2);
+    const hLines = new THREE.LineSegments(new THREE.EdgesGeometry(shellH, 12), lineMat(COL.line, .85));
+    housingG.add(hLines);
+    registerDraw(housingG);
+    // meridian lines for volume
+    for (let k = 0; k <= 6; k++){
+      const th = TH_START + TH_LEN*k/6;
+      const pts = [];
+      for (let j = 0; j <= 20; j++){
+        const y = -1 + 2*j/20;
+        pts.push(new THREE.Vector3(Math.cos(th)*.58, y, Math.sin(th)*.58));
+      }
+      housingG.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), lineMat(COL.line, .3)));
+    }
+    // end rings
+    [1,-1].forEach(sgn => {
+      const rg = new THREE.RingGeometry(0, .58, 28, 1, Math.PI*.55, Math.PI*1.12);
+      rg.rotateY(sgn*Math.PI/2);
+      housingG.add(new THREE.LineSegments(new THREE.EdgesGeometry(rg), lineMat(COL.line, .6)).translateX(sgn*1.0));
+    });
+
+    const shellP = new THREE.CylinderGeometry(.36, .36, 1.7, 36, 1, true, TH_START, TH_LEN);
+    shellP.rotateZ(Math.PI/2);
+    plugG.add(new THREE.LineSegments(new THREE.EdgesGeometry(shellP, 12), lineMat(COL.line, .7)));
+
+    // pin stacks — CANONICAL: key pin bottom rests ON the tooth top (y=TOOTH[i]),
+    // key pin top = .36 (plug surface = shear line), driver above, spring on top.
+    for (let i = 0; i < 5; i++){
+      const KP = .36 - TOOTH[i];        // key pin length: tooth top ? shear line
+      const stack = new THREE.Group();
+      stack.position.x = PIN_X[i];
+
+      // key pin: body between tooth top and shear line
+      const keyPinG = new THREE.BoxGeometry(.105, KP, .105);
+      const keyPin = new THREE.LineSegments(new THREE.EdgesGeometry(keyPinG), lineMat(COL.lineBright, .9));
+      keyPin.position.y = TOOTH[i] + KP/2;
+      // mushroom tip (wider cap at the shear line)
+      const tipG = new THREE.BoxGeometry(.13, .035, .13);
+      const tip = new THREE.LineSegments(new THREE.EdgesGeometry(tipG), lineMat(COL.lineBright, .95));
+      tip.position.y = .36 - .0175;
+      // dome on top of the driver pin (3-seg profile)
+      const domePts = [];
+      for (let k = 0; k <= 8; k++){
+        const a = Math.PI * k/8;
+        domePts.push(new THREE.Vector3(Math.cos(a)*.052, .06*Math.sin(a), 0));
+      }
+      const dome = new THREE.Line(new THREE.BufferGeometry().setFromPoints(domePts), lineMat(COL.lineBright, .7));
+      dome.position.y = .62;
+      // driver pin: body in the HOUSING above the shear line (bottom at .36
+      // when the key is set; drops below .36 when unset ? blocks rotation)
+      const driverG = new THREE.BoxGeometry(.105, .26, .105);
+      const driver = new THREE.LineSegments(new THREE.EdgesGeometry(driverG), lineMat(COL.line, .8));
+      driver.position.y = .49;
+
+      // spring: DOUBLE helix (outer + inner coil) above the driver — baked 0..LEN
+      const pts = [], pts2 = [];
+      const COILS = 6, LEN = .29;
+      for (let k = 0; k <= 72; k++){
+        const t = k/72;
+        pts.push(new THREE.Vector3(Math.cos(t*Math.PI*2*COILS)*.055, t*LEN, Math.sin(t*Math.PI*2*COILS)*.055));
+        pts2.push(new THREE.Vector3(Math.cos(t*Math.PI*2*COILS+Math.PI*.8)*.032, t*LEN*.97, Math.sin(t*Math.PI*2*COILS+Math.PI*.8)*.032));
+      }
+      const spring = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), lineMat(COL.line, .55));
+      const spring2 = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts2), lineMat(COL.line, .3));
+      spring.position.y = .62;
+      spring2.position.y = .62;
+
+      // pin chamber: vertical guide walls (2 lines flanking the stack)
+      const chL = new THREE.Line(new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(-.085, .16, 0), new THREE.Vector3(-.085, .7, 0)
+      ]), lineMat(COL.line, .18));
+      const chR = new THREE.Line(new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(.085, .16, 0), new THREE.Vector3(.085, .7, 0)
+      ]), lineMat(COL.line, .18));
+
+      stack.add(keyPin, tip, dome, driver, spring, spring2, chL, chR);
+      stack.userData = { travel: TOOTH[i], spring, keyPin, spring2, dome };
+      pinStacks.push(stack);
+      cylGroup.add(stack);
+    }
+
+    // shear line glow — at the plug surface (y=.36), where key pins separate
+    glowMat = new THREE.MeshBasicMaterial({ color:COL.lineBright, transparent:true, opacity:0, depthWrite:false, side:THREE.DoubleSide });
+    const glow = new THREE.Mesh(new THREE.BoxGeometry(1.5, .014, .13), glowMat);
+    glow.position.y = .36;
+    cylGroup.add(glow);
+    registerDraw(cylGroup);
+  }
+
+  /* ---- cylinder detail layer: cam groove, keyway, face milling marks ---- */
+  {
+    // keyway slot in the plug face (where the key enters) — bright outline
+    // plug face outline at x = 1.0 (front face): circle + keyway polygon
+    const facePts = [];
+    for (let k = 0; k <= 36; k++){
+      const a = k/36*Math.PI*2;
+      facePts.push(new THREE.Vector3(1.001, Math.cos(a)*.36, Math.sin(a)*.36));
+    }
+    plugG.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(facePts), lineMat(COL.lineBright, .55)));
+    // keyway: slot matches the key blade cross-section exactly —
+    // body below the axis (y -.15..0), teeth space above (y 0..+.25)
+    const slotPts = [];
+    for (let k = 0; k <= 8; k++){
+      const t = k/8;
+      slotPts.push(new THREE.Vector3(1.0015, -.15*t*1.4 - .21, .16*Math.sin(Math.PI*t)));
+    }
+    void slotPts;
+    plugG.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(1.0015, 0, -.09), new THREE.Vector3(1.0015, -.15, -.09),
+      new THREE.Vector3(1.0015, -.15, .09), new THREE.Vector3(1.0015, 0, .09),
+      new THREE.Vector3(1.0015, 0, -.09)
+    ]), lineMat(COL.lineBright, .45)));
+    // keyway outline rectangle on face (blade width ±.09, teeth zone to +.25)
+    const kwOutline = [
+      new THREE.Vector3(1.001, -.15, -.09), new THREE.Vector3(1.001, .25, -.09),
+      new THREE.Vector3(1.001, .25, .09), new THREE.Vector3(1.001, -.15, .09),
+      new THREE.Vector3(1.001, -.15, -.09)
+    ];
+    plugG.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(kwOutline), lineMat(COL.line, .25)));
+
+    // cam: eccentric lobe on the plug rear (rotates with plug) — functional detail
+    const camPts = [];
+    for (let k = 0; k <= 30; k++){
+      const a = k/30*Math.PI*2;
+      const r = .34 + .1*Math.cos(a); // eccentric lobe
+      camPts.push(new THREE.Vector3(-1.05, Math.cos(a)*r, Math.sin(a)*r));
+    }
+    const camLine = new THREE.Line(new THREE.BufferGeometry().setFromPoints(camPts), lineMat(COL.line, .6));
+    plugG.add(camLine);
+    // cam follower track (static, on housing)
+    const folPts = [];
+    for (let k = 0; k <= 20; k++){
+      const a = -Math.PI*.5 + Math.PI*k/20;
+      folPts.push(new THREE.Vector3(-1.1, Math.cos(a)*.5, Math.sin(a)*.5));
+    }
+    housingG.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(folPts), lineMat(COL.line, .3)));
+
+    // milling marks on housing shell (subtle radial ticks)
+    for (let k = 0; k < 12; k++){
+      const th = TH_START + TH_LEN*k/11;
+      const a = new THREE.Vector3(Math.cos(th)*.58, -1, Math.sin(th)*.58);
+      const b = new THREE.Vector3(Math.cos(th)*.58, -.92, Math.sin(th)*.58);
+      housingG.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([a, b]), lineMat(COL.line, .22)));
+    }
+
+    // mounting flange at the rear with bolt circle (6 bolts) — real housing detail
+    const flange = [];
+    for (let k = 0; k <= 44; k++){
+      const a = k/44*Math.PI*2;
+      flange.push(new THREE.Vector3(-1.0 + Math.cos(a)*.04, Math.cos(a)*.72, Math.sin(a)*.72));
+    }
+    void flange;
+    // flange disc at x=-1.0 (ring face perpendicular to axis)
+    const flRing = [];
+    for (let k = 0; k <= 44; k++){
+      const a = k/44*Math.PI*2;
+      flRing.push(new THREE.Vector3(-1.0, Math.cos(a)*.72, Math.sin(a)*.72));
+    }
+    housingG.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(flRing), lineMat(COL.line, .65)));
+    // bolts on the bolt circle — proper hex-head bolts (hex prism + washer ring + shank)
+    for (let k = 0; k < 6; k++){
+      const a = k/6*Math.PI*2 + .26;
+      const by = Math.cos(a)*.65, bz = Math.sin(a)*.65;
+      const bolt = new THREE.Group();
+      bolt.position.set(-1.0, by, bz);
+      bolt.rotation.x = a; // orient hex flat-top outward radially
+      const hexR = .045, hexH = .05;
+      // hex prism: front face ring (x=-hexH) + rear face ring (x=0) + 6 longitudinal edges
+      const hF = [], hR = [];
+      for (let j = 0; j < 6; j++){
+        const b = j/6*Math.PI*2 + Math.PI/6;
+        const py = Math.cos(b)*hexR, pz = Math.sin(b)*hexR;
+        hF.push(new THREE.Vector3(-hexH, py, pz));
+        hR.push(new THREE.Vector3(0, py, pz));
+      }
+      hF.push(hF[0].clone()); hR.push(hR[0].clone());
+      bolt.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(hF), lineMat(COL.lineBright, .85)));
+      bolt.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(hR), lineMat(COL.line, .5)));
+      for (let j = 0; j < 6; j++){
+        bolt.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([hF[j], hR[j]]), lineMat(COL.line, .35)));
+      }
+      // top facets of the head (chamfer suggestion): triangle tips between corners
+      for (let j = 0; j < 6; j++){
+        const b1 = j/6*Math.PI*2 + Math.PI/6, b2 = (j+1)/6*Math.PI*2 + Math.PI/6;
+        const m1 = (b1+b2)/2;
+        bolt.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
+          new THREE.Vector3(-hexH*.55, Math.cos(b1)*hexR, Math.sin(b1)*hexR),
+          new THREE.Vector3(-hexH*.8, Math.cos(m1)*hexR*1.02, Math.sin(m1)*hexR*1.02),
+          new THREE.Vector3(-hexH*.55, Math.cos(b2)*hexR, Math.sin(b2)*hexR)
+        ]), lineMat(COL.line, .3)));
+      }
+      // washer ring at base (r .06) + shank circle (r .028) going into the flange
+      const wash = [];
+      for (let j = 0; j <= 14; j++){
+        const b = j/14*Math.PI*2;
+        wash.push(new THREE.Vector3(0.012, Math.cos(b)*.062, Math.sin(b)*.062));
+      }
+      bolt.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(wash), lineMat(COL.lineBright, .6)));
+      const shank = [];
+      for (let j = 0; j <= 12; j++){
+        const b = j/12*Math.PI*2;
+        shank.push(new THREE.Vector3(0.05, Math.cos(b)*.028, Math.sin(b)*.028));
+      }
+      bolt.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(shank), lineMat(COL.line, .45)));
+      housingG.add(bolt);
+    }
+
+    // section-plane indicator A–A (cutting plane through pin axis, front view)
+    secAMat = lineMat(COL.lineBright, .0);
+    cylGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(.5, 0, -.75), new THREE.Vector3(.5, 0, .75)
+    ]), secAMat));
+    secBMat = lineMat(COL.lineBright, .0);
+    cylGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(-.5, 0, -.75), new THREE.Vector3(-.5, 0, .75)
+    ]), secBMat));
+
+    /* ---- section HATCHING: 45° hatch lines across the cut faces (classic drawing) ---- */
+    hatchMat = lineMat(COL.line, .0);
+    {
+      // hatch the housing wall band: x from -1..1, between r .36..58, projected at z-plane of cut
+      const hatchPts = [];
+      const step = .075;
+      for (let x = -1.0; x <= 1.0; x += step){
+        // diagonal line segment crossing the wall band in x-y plane at z=.75 front cut plane
+        hatchPts.push(new THREE.Vector3(x, -.62, .74), new THREE.Vector3(x+.24, -.3, .74));
+        hatchPts.push(new THREE.Vector3(x, .3, .74), new THREE.Vector3(x+.24, .62, .74));
+      }
+      cylGroup.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(hatchPts), hatchMat));
+      // plug wall hatch (denser, brighter zone)
+      const plugHatch = [];
+      for (let x = -.85; x <= .85; x += .06){
+        plugHatch.push(new THREE.Vector3(x, -.3, .7), new THREE.Vector3(x+.15, -.15, .7));
+        plugHatch.push(new THREE.Vector3(x, .15, .7), new THREE.Vector3(x+.15, .3, .7));
+      }
+      cylGroup.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(plugHatch), hatchMat));
+    }
+
+    // nose (front cam) of housing: stepped rings at x=+1.0
+    [[.58, .7], [.5, .78], [.42, .92]].forEach(([r, x]) => {
+      const ring = [];
+      for (let k = 0; k <= 40; k++){
+        const a = k/40*Math.PI*2;
+        ring.push(new THREE.Vector3(x, Math.cos(a)*r, Math.sin(a)*r));
+      }
+      housingG.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(ring), lineMat(COL.line, .5)));
+    });
+
+    /* ---- plug face datum details: center-mark, locking screws, tailpiece ----
+       the face of a real profile cylinder: center cross + 2 cross-head screws */
+    {
+      // center mark (crosshair + tiny circle) on plug axis at the face
+      const cm = new THREE.Group();
+      cm.position.x = 1.002;
+      cm.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(0, -.06, 0), new THREE.Vector3(0, .06, 0)
+      ]), lineMat(COL.lineBright, .7)));
+      cm.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(0, 0, -.06), new THREE.Vector3(0, 0, .06)
+      ]), lineMat(COL.lineBright, .7)));
+      const cmc = [];
+      for (let k = 0; k <= 16; k++){
+        const a = k/16*Math.PI*2;
+        cmc.push(new THREE.Vector3(0, Math.cos(a)*.028, Math.sin(a)*.028));
+      }
+      cm.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(cmc), lineMat(COL.lineBright, .55)));
+      plugG.add(cm);
+
+      // two cross-head locking screws on the plug face (60°/240°, r .27)
+      [.35, 2.3].forEach(aa => {
+        const sc = new THREE.Group();
+        sc.position.x = 1.003;
+        sc.rotation.x = aa;
+        const ry = Math.cos(aa)*.27, rz = Math.sin(aa)*.27;
+        sc.position.y = ry; sc.position.z = rz;
+        // screw head circle + cross slot
+        const headC = [];
+        for (let k = 0; k <= 18; k++){
+          const a = k/18*Math.PI*2;
+          headC.push(new THREE.Vector3(0, Math.cos(a)*.045, Math.sin(a)*.045));
+        }
+        sc.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(headC), lineMat(COL.line, .6)));
+        sc.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
+          new THREE.Vector3(0, -.045, 0), new THREE.Vector3(0, .045, 0)
+        ]), lineMat(COL.line, .5)));
+        sc.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
+          new THREE.Vector3(0, 0, -.045), new THREE.Vector3(0, 0, .045)
+        ]), lineMat(COL.line, .5)));
+        plugG.add(sc);
+      });
+
+      // tailpiece: hex cam bar protruding from the rear face (drives the lock case)
+      const tail = new THREE.Group();
+      tail.position.x = -1.12;
+      const thF = [], thR = [];
+      for (let j = 0; j < 6; j++){
+        const b = j/6*Math.PI*2 + Math.PI/6;
+        thF.push(new THREE.Vector3(0, Math.cos(b)*.07, Math.sin(b)*.07));
+        thR.push(new THREE.Vector3(-.18, Math.cos(b)*.07, Math.sin(b)*.07));
+      }
+      thF.push(thF[0].clone()); thR.push(thR[0].clone());
+      tail.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(thF), lineMat(COL.lineBright, .7)));
+      tail.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(thR), lineMat(COL.line, .45)));
+      for (let j = 0; j < 6; j++){
+        tail.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([thF[j], thR[j]]), lineMat(COL.line, .3)));
+      }
+      housingG.add(tail);
+      // retainer clip spring washer behind the tailpiece
+      const clip = [];
+      for (let k = 0; k <= 26; k++){
+        const a = k/26*Math.PI*2;
+        const r = .1 + .02*Math.sin(a*3);
+        clip.push(new THREE.Vector3(-1.31, Math.cos(a)*r, Math.sin(a)*r));
+      }
+      housingG.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(clip), lineMat(COL.line, .45)));
+    }
+  }
+
+  /* ---- projector base: rings + beam ---- */
+  {
+    rings = new THREE.Group();
+    [.9, 1.25, 1.6].forEach((r, i) => {
+      const seg = 48;
+      const pts = [];
+      for (let k = 0; k <= seg; k++){
+        const a = k/seg * Math.PI*2;
+        pts.push(new THREE.Vector3(Math.cos(a)*r, 0, Math.sin(a)*r));
+      }
+      const ring = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), lineMat(COL.line, .5 - i*.13));
+      rings.add(ring);
+    });
+    rings.position.y = -1.3;
+    scene.add(rings);
+    registerDraw(rings);
+    /* protractor ticks around the outer ring — 72 fine + 12 major (5°/30°),
+       like a measuring turntable under the hologram */
+    for (let k = 0; k < 72; k++){
+      const a = k/72*Math.PI*2;
+      const maj = k % 6 === 0;
+      const rr = maj ? [.78, .68] : [.78, .73];
+      const g = new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(Math.cos(a)*rr[0], 0, Math.sin(a)*rr[0]),
+        new THREE.Vector3(Math.cos(a)*rr[1], 0, Math.sin(a)*rr[1])
+      ]);
+      rings.add(new THREE.LineSegments(g, lineMat(COL.line, maj ? .4 : .22)));
+    }
+    // degree numerals are DOM labels; measurement cursor ring (rotates, keyed to scroll P)
+    measRing = new THREE.Group();
+    const mrR = .73;
+    const mrA0 = -.5; // cursor arm at -30°
+    measRing.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(Math.cos(mrA0)*.62, 0, Math.sin(mrA0)*.62),
+      new THREE.Vector3(Math.cos(mrA0)*.86, 0, Math.sin(mrA0)*.86)
+    ]), lineMat(COL.lineBright, 0)));
+    const mrc = [];
+    for (let k = 0; k <= 40; k++){
+      const a = k/40*Math.PI*2;
+      mrc.push(new THREE.Vector3(Math.cos(a)*.06, 0, Math.sin(a)*.06));
+    }
+    const mrcPos = new THREE.Vector3(Math.cos(mrA0)*.74, 0, Math.sin(mrA0)*.74);
+    const mrcG = new THREE.BufferGeometry().setFromPoints(mrc.map(p => p.clone().add(mrcPos)));
+    measRing.add(new THREE.Line(mrcG, lineMat(COL.lineBright, 0)));
+    measRing.position.y = -1.3;
+    measRingMats = [];
+    measRing.traverse(o => { if (o.isLine){ measRingMats.push(o.material); } });
+    scene.add(measRing);
+    // projector ring tick marks (60 radial ticks, like a lens bezel)
+    for (let k = 0; k < 60; k++){
+      const a = k/60*Math.PI*2;
+      const rr = (k % 5 === 0) ? [.88, .82] : [.9, .87];
+      const g = new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(Math.cos(a)*rr[0], 0, Math.sin(a)*rr[0]),
+        new THREE.Vector3(Math.cos(a)*rr[1], 0, Math.sin(a)*rr[1])
+      ]);
+      rings.add(new THREE.LineSegments(g, lineMat(COL.line, .35)));
+    }
+
+    // light beam cone (subtle) with inner brighter core cone
+    const beamGeo = new THREE.ConeGeometry(1.7, 2.2, 32, 1, true);
+    const beamMat = faceMat(0x22D3EE, .025);
+    beam = new THREE.Mesh(beamGeo, beamMat);
+    beam.position.y = -0.2;
+    scene.add(beam);
+    const beamCore = new THREE.Mesh(
+      new THREE.ConeGeometry(1.1, 2.2, 24, 1, true),
+      faceMat(0x22D3EE, .03)
+    );
+    beamCore.position.y = -0.2;
+    beam.add(beamCore);
+  }
+
+  /* ---- KLICK shockwave ring ---- */
+  {
+    const seg = 64;
+    const pts = [];
+    for (let k = 0; k <= seg; k++){
+      const a = k/seg*Math.PI*2;
+      pts.push(new THREE.Vector3(Math.cos(a)*.5, 0, Math.sin(a)*.5));
+    }
+    const waveGeo = new THREE.BufferGeometry().setFromPoints(pts);
+    shockwave = new THREE.Line(waveGeo, new THREE.LineBasicMaterial({ color:COL.lineBright, transparent:true, opacity:0 }));
+    scene.add(shockwave);
+  }
+
+  /* ---- KLICK flash overlay (DOM) ---- */
+  flashEl = document.createElement('div');
+  flashEl.style.cssText = 'position:fixed;inset:0;z-index:8;pointer-events:none;background:radial-gradient(60% 50% at 50% 46%, rgba(56,189,248,.28), transparent 70%);opacity:0';
+  document.body.appendChild(flashEl);
+
+  /* ---- scan plane (sweeps the key in scene 1) ---- */
+  {
+    scanPlane = new THREE.Mesh(
+      new THREE.PlaneGeometry(.02, 1.6),
+      new THREE.MeshBasicMaterial({ color:COL.lineBright, transparent:true, opacity:0, depthWrite:false, side:THREE.DoubleSide })
+    );
+    scene.add(scanPlane);
+  }
+
+  /* ---- CAD dimension lines with arrows + values (3D, anchored to geometry) ----
+     Created after CSS2DRenderer import; see dimDefs below. */
+
+  /* ---- center axis (dash-dot) of the cylinder — classic drawing convention ---- */
+  const axisPts = [];
+  for (let k = 0; k <= 40; k++){
+    const x = -1.35 + 2.7*k/40;
+    axisPts.push(new THREE.Vector3(x, 0, 0));
+  }
+  const axisGeo = new THREE.BufferGeometry().setFromPoints(axisPts);
+  axisMat = new THREE.LineDashedMaterial({ color:COL.navy, transparent:true, opacity:0, dashSize:.09, gapSize:.05 });
+  axisMat.userData.base = 0; holoMats.push(axisMat);
+  axisLine = new THREE.Line(axisGeo, axisMat);
+  axisLine.computeLineDistances();
+  scene.add(axisLine);
+
+  /* ---- rotation arc "−90°" for the KLICK scene ---- */
+  const arcPts = [];
+  for (let k = 0; k <= 24; k++){
+    const a = -Math.PI/2 * k/24;
+    arcPts.push(new THREE.Vector3(0, Math.cos(a)*.75, Math.sin(a)*.75));
+  }
+  const arcGeo = new THREE.BufferGeometry().setFromPoints(arcPts);
+  arcMat = new THREE.LineDashedMaterial({ color:COL.lineBright, transparent:true, opacity:0, dashSize:.06, gapSize:.04 });
+  arcMat.userData.base = 0; holoMats.push(arcMat);
+  klickArc = new THREE.Line(arcGeo, arcMat);
+  klickArc.computeLineDistances();
+  klickArc.visible = false;
+  scene.add(klickArc);
+
+  /* ---- scene 1: spin group for the key (slow holo rotation while profiling) ---- */
+  spinGroup = new THREE.Group();
+  assembly.add(spinGroup);
+  /* key rides on the lock axis: KLICK turns key+plug about the cylinder axis,
+     explode translates both together — the key never intersects the plug body */
+  keyPivot = new THREE.Group();
+  spinGroup.add(keyPivot);
+  keyPivot.add(keyGroup);
+
+  /* ---- dust ---- */
+  {
+    const N = IS_MOBILE ? 60 : 150;
+    const pos = new Float32Array(N*3);
+    for (let i = 0; i < N; i++){
+      pos[i*3] = (Math.random()-.5)*12;
+      pos[i*3+1] = (Math.random()-.5)*6 + 1;
+      pos[i*3+2] = (Math.random()-.5)*8;
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    dust = new THREE.Points(g, new THREE.PointsMaterial({ color:COL.cyan, size:.03, transparent:true, opacity:.4, depthWrite:false }));
+    scene.add(dust);
+
+    /* data motes: rising motes inside a narrow column under the assembly —
+       reads as data streaming up into the hologram */
+    const M = IS_MOBILE ? 20 : 55;
+    const mpos = new Float32Array(M*3);
+    const mspd = new Float32Array(M);
+    for (let i = 0; i < M; i++){
+      mpos[i*3]   = (Math.random()-.5)*4.4;
+      mpos[i*3+1] = -1.3 + Math.random()*3.2;
+      mpos[i*3+2] = (Math.random()-.5)*2.4;
+      mspd[i] = .15 + Math.random()*.5;
+    }
+    const mg = new THREE.BufferGeometry();
+    mg.setAttribute('position', new THREE.BufferAttribute(mpos, 3));
+    motes = new THREE.Points(mg, new THREE.PointsMaterial({ color:COL.lineBright, size:.045, transparent:true, opacity:.5, depthWrite:false }));
+    motes.userData.spd = mspd;
+    scene.add(motes);
+  }
+
+  /* ---- living background: per-scene set dressing ----
+     orbits+satellites (scenes 0-1), topo contours (2-3), gears (2-4),
+     signal arcs (always), skyline (opening + finale) */
+  {
+    /* 1) orbital rings with traveling satellites — "the key is being scanned
+          by an orbital sensor swarm" (scenes 0-1) */
+    bgOrbit = new THREE.Group();
+    const mkOrbit = (r, rx, rz, a0) => {
+      const g = new THREE.Group();
+      g.rotation.x = rx; g.rotation.z = rz;
+      const pts = [];
+      for (let i = 0; i <= 96; i++){ const a = i/96*Math.PI*2; pts.push(new THREE.Vector3(Math.cos(a)*r, 0, Math.sin(a)*r)); }
+      g.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), lineMat(COL.line, .12)));
+      const dpts = [new THREE.Vector3(0,.07,0), new THREE.Vector3(.055,0,0), new THREE.Vector3(0,-.07,0), new THREE.Vector3(-.055,0,0), new THREE.Vector3(0,.07,0)];
+      const sat = new THREE.Line(new THREE.BufferGeometry().setFromPoints(dpts), lineMat(COL.lineBright, .55));
+      g.add(sat);
+      g.userData = { r, sat, a0 };
+      bgOrbit.add(g);
+    };
+    mkOrbit(3.3, 1.22, .12, 0);
+    mkOrbit(3.95, 1.02, -.38, 2.4);
+    scene.add(bgOrbit);
+
+    /* 2) topographic contour rings under the floor — the machine stands on
+          surveyed ground (scenes 2-3) */
+    bgTopo = new THREE.Group();
+    for (let k = 0; k < 3; k++){
+      const base = 1.55 + k*.55, pts = [];
+      for (let i = 0; i <= 120; i++){
+        const a = i/120*Math.PI*2;
+        const r = base + Math.sin(a*5 + k*2.1)*.22 + Math.sin(a*11 + k)*.07;
+        pts.push(new THREE.Vector3(Math.cos(a)*r, -1.27 + k*.004, Math.sin(a)*r));
+      }
+      bgTopo.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), lineMat(COL.line, .17 - k*.03)));
+    }
+    bgTopo.position.set(-.3, 0, -.4);
+    scene.add(bgTopo);
+
+    /* 3) meshing wireframe gears behind-left of the housing — the workshop
+          mechanism never sleeps (scenes 2-4) */
+    bgGears = new THREE.Group();
+    const mkGear = (R, T) => {
+      const g = new THREE.Group();
+      const n = T*8, pts = [];
+      for (let i = 0; i <= n; i++){
+        const a = i/n*Math.PI*2;
+        const r = Math.floor(i/(n/(T*2)))%2 ? R : R*.84;
+        pts.push(new THREE.Vector3(Math.cos(a)*r, Math.sin(a)*r, 0));
+      }
+      g.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), lineMat(COL.line, .22)));
+      const cpts = [];
+      for (let i = 0; i <= 32; i++){ const a = i/32*Math.PI*2; cpts.push(new THREE.Vector3(Math.cos(a)*R*.32, Math.sin(a)*R*.32, 0)); }
+      g.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(cpts), lineMat(COL.line, .16)));
+      for (let s = 0; s < 4; s++){
+        const a = s*Math.PI/2;
+        g.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
+          new THREE.Vector3(Math.cos(a)*R*.32, Math.sin(a)*R*.32, 0),
+          new THREE.Vector3(Math.cos(a)*R*.78, Math.sin(a)*R*.78, 0)
+        ]), lineMat(COL.line, .14)));
+      }
+      return g;
+    };
+    const gg1 = mkGear(.42, 9); gg1.position.set(-2.1, -.85, -.9);
+    const gg2 = mkGear(.3, 7);  gg2.position.set(-1.44, -.5, -.9);
+    bgGears.add(gg1, gg2);
+    bgGears.userData = { g1: gg1, g2: gg2 };
+    scene.add(bgGears);
+
+    /* 4) expanding signal arcs from the projector base — the emitter is live */
+    bgArcs = new THREE.Group();
+    for (let k = 0; k < 3; k++){
+      const pts = [];
+      for (let i = 0; i <= 80; i++){ const a = i/80*Math.PI*2; pts.push(new THREE.Vector3(Math.cos(a), -1.28, Math.sin(a))); }
+      const ring = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), lineMat(COL.lineBright, 0));
+      ring.userData.k = k;
+      bgArcs.add(ring);
+    }
+    scene.add(bgArcs);
+
+    /* 5) wireframe skyline on the horizon — Kreuztal behind the technology */
+    bgCity = new THREE.Group();
+    const bl = [[-7.8,1.1],[-7.2,.7],[-6.5,1.5],[-5.8,.9],[-5.1,1.3],[5.2,.8],[5.9,1.4],[6.6,.6],[7.3,1.2],[7.9,.9]];
+    for (const [bx, bh] of bl){
+      bgCity.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(bx, -1.29, -4), new THREE.Vector3(bx, -1.29 + bh, -4)
+      ]), lineMat(COL.line, .2)));
+      bgCity.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(bx-.16, -1.29, -4), new THREE.Vector3(bx+.16, -1.29, -4)
+      ]), lineMat(COL.line, .14)));
+      if (bh > 1.1) bgCity.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(bx, -1.29 + bh, -4), new THREE.Vector3(bx, -1.29 + bh + .15, -4)
+      ]), lineMat(COL.lineBright, .35)));
+    }
+    scene.add(bgCity);
+  }
+  /* pre-hide props whose windows start later — first frames run before sceneStateAt */
+  bgTopo.visible = false; bgGears.visible = false; bgCity.visible = false;
+
+  /* ---- contact shadow under assembly (soft ellipse, grounds the hologram) ---- */
+  shadowMat = new THREE.MeshBasicMaterial({ color:COL.navy, transparent:true, opacity:0, depthWrite:false });
+  shadowMesh = new THREE.Mesh(new THREE.CircleGeometry(1, 40), shadowMat);
+  shadowMesh.rotation.x = -Math.PI/2;
+  shadowMesh.scale.set(1.6, .9, 1);
+  shadowMesh.position.y = -1.29;
+  scene.add(shadowMesh);
+
+  /* ---- insertion path guide (dashed line where key slides in, scene 3) ---- */
+  pathMat = new THREE.LineDashedMaterial({ color:COL.lineBright, transparent:true, opacity:0, dashSize:.07, gapSize:.05 });
+  pathMat.userData.base = 0; holoMats.push(pathMat);
+  pathLine = new THREE.Line(new THREE.BufferGeometry().setFromPoints([
+    new THREE.Vector3(2.5, 0, 0), new THREE.Vector3(0, 0, 0)
+  ]), pathMat);
+  pathLine.computeLineDistances();
+  scene.add(pathLine);
+
+  /* ---- CAD selection bounding box (dash-dot box + corner brackets) ----
+     wraps the whole assembly like an active CAD selection; corners emphasized */
+  {
+    bboxGroup = new THREE.Group();
+    const bx = 2.05, by = .95, bz = .62;          // half-extents
+    const bmat = () => new THREE.LineDashedMaterial({ color:COL.line, transparent:true, opacity:0, dashSize:.06, gapSize:.045 });
+    const corners = [];
+    for (const sx of [-1,1]) for (const sy of [-1,1]) for (const sz of [-1,1])
+      corners.push(new THREE.Vector3(sx*bx, sy*by, sz*bz));
+    // 12 edges (dashed)
+    const edgePairs = [[0,1],[2,3],[4,5],[6,7],[0,2],[1,3],[4,6],[5,7],[0,4],[1,5],[2,6],[3,7]];
+    bboxMats = [];
+    for (const [i,j] of edgePairs){
+      const m = bmat(); m.userData.base = 0; holoMats.push(m); bboxMats.push(m);
+      const g = new THREE.BufferGeometry().setFromPoints([corners[i], corners[j]]);
+      const l = new THREE.Line(g, m);
+      l.computeLineDistances();
+      bboxGroup.add(l);
+    }
+    // corner brackets (solid bright L-triplets at each corner)
+    const brk = (c) => {
+      const g = [];
+      g.push(c.clone(), c.clone().add(new THREE.Vector3(-Math.sign(c.x)*.16, 0, 0)));
+      g.push(c.clone(), c.clone().add(new THREE.Vector3(0, -Math.sign(c.y)*.16, 0)));
+      g.push(c.clone(), c.clone().add(new THREE.Vector3(0, 0, -Math.sign(c.z)*.16)));
+      return g;
+    };
+    const brkMat = lineMat(COL.lineBright, .0);
+    bboxMats.push(brkMat);
+    bboxGroup.add(new THREE.LineSegments(
+      new THREE.BufferGeometry().setFromPoints(corners.flatMap(brk)), brkMat));
+    bboxGroup.position.set(.15, .3, 0);
+    scene.add(bboxGroup);
+  }
+
+  /* ---- drawing sheet frame + title block (UMRahnung, classic blueprint) ---- */
+  sheetGroup = new THREE.Group();
+  const sheetX = 4.6, sheetY = 2.9, sheetZ = -2.6;
+  // outer frame
+  sheetGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
+    new THREE.Vector3(-sheetX, -sheetY, sheetZ), new THREE.Vector3(sheetX, -sheetY, sheetZ),
+    new THREE.Vector3(sheetX, sheetY, sheetZ), new THREE.Vector3(-sheetX, sheetY, sheetZ),
+    new THREE.Vector3(-sheetX, -sheetY, sheetZ)
+  ]), lineMat(COL.line, .0)));
+  // inner frame with margin
+  const m = .18;
+  sheetGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
+    new THREE.Vector3(-sheetX+m, -sheetY+m, sheetZ), new THREE.Vector3(sheetX-m, -sheetY+m, sheetZ),
+    new THREE.Vector3(sheetX-m, sheetY-m, sheetZ), new THREE.Vector3(-sheetX+m, sheetY-m, sheetZ),
+    new THREE.Vector3(-sheetX+m, -sheetY+m, sheetZ)
+  ]), lineMat(COL.line, .0)));
+  // corner registration marks (crosshair targets)
+  [[-sheetX+m, -sheetY+m], [sheetX-m, -sheetY+m], [sheetX-m, sheetY-m], [-sheetX+m, sheetY-m]].forEach(([cx, cy]) => {
+    sheetGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(cx-.09, cy, sheetZ), new THREE.Vector3(cx+.09, cy, sheetZ)
+    ]), lineMat(COL.lineBright, .0)));
+    sheetGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(cx, cy-.09, sheetZ), new THREE.Vector3(cx, cy+.09, sheetZ)
+    ]), lineMat(COL.lineBright, .0)));
+  });
+  // grid crosses inside sheet (fine, sparse)
+  for (let gx = -3.6; gx <= 3.6; gx += 1.2){
+    for (let gy = -1.8; gy <= 1.8; gy += 1.2){
+      sheetGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(gx-.05, gy, sheetZ), new THREE.Vector3(gx+.05, gy, sheetZ)
+      ]), lineMat(COL.line, .0)));
+      sheetGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(gx, gy-.05, sheetZ), new THREE.Vector3(gx, gy+.05, sheetZ)
+      ]), lineMat(COL.line, .0)));
+    }
+  }
+  scene.add(sheetGroup);
+  sheetGroup.traverse(o => { if (o.isLine) sheetMats.push(o.material); });
+
+  /* ---- holo labels ---- */
+  /* ---- holo labels ---- */
+  const labelDefs = [
+    { t:'BISSUNG 1 · 1.20 mm',    a:[PIN_X[0], .95, 0],  o:[.3,.3,0],  win:[1,.6] },
+    { t:'BISSUNG 5 · 0.75 mm',    a:[PIN_X[4], .9, 0],   o:[.32,.3,0], win:[1,.75] },
+    { t:'ZUHALTUNG 2 · 0.95 mm',  a:[PIN_X[1], .5, 0],   o:[.36,.34,0],win:[2,.35] },
+    { t:'ZUHALTUNG 4 · 0.85 mm',  a:[PIN_X[3], .5, 0],   o:[.38,.32,0],win:[2,.55] },
+    { t:'SCHERENLINIE ±0.01 mm',  a:[0, .36, 0],         o:[-.48,.36,0], win:[3,.45] },
+  ];
+  /* SCHERENLINIE anchor sits at the true shear line (plug surface, y=.36) */
+  cadLabels = labelDefs.map(d => {
+    const el = document.createElement('div');
+    el.className = 'cad-label';
+    el.textContent = d.t;
+    return { el, d };
+  });
+  const { CSS2DRenderer, CSS2DObject } = await import('three/addons/renderers/CSS2DRenderer.js');
+  labelRenderer = new CSS2DRenderer();
+  labelRenderer.setSize(innerWidth, innerHeight);
+  const lrDom = labelRenderer.domElement;
+  lrDom.style.position = 'absolute'; lrDom.style.top = '0'; lrDom.style.left = '0'; lrDom.style.pointerEvents = 'none';
+  document.getElementById('labels').appendChild(lrDom);
+  cadLabels.forEach(L => {
+    const obj = new CSS2DObject(L.el);
+    obj.position.set(L.d.a[0]+L.d.o[0], L.d.a[1]+L.d.o[1], L.d.a[2]+L.d.o[2]);
+    scene.add(obj);
+    L.obj = obj;
+    const g = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(...L.d.a), new THREE.Vector3(L.d.a[0]+L.d.o[0], L.d.a[1]+L.d.o[1], L.d.a[2]+L.d.o[2])]);
+    L.line = new THREE.Line(g, lineMat(COL.line, .0));
+    scene.add(L.line);
+  });
+
+  /* ---- CAD dimension lines (need CSS2DObject, so built here) ---- */
+  dimGroup = new THREE.Group();
+  scene.add(dimGroup);
+  function makeDim(a, dir, len, text){
+    const g = new THREE.Group();
+    const b = new THREE.Vector3(a[0]+dir[0]*len, a[1]+dir[1]*len, a[2]+dir[2]*len);
+    g.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(
+      [new THREE.Vector3(...a), b]), lineMat(COL.line, .0)));
+    const ah = .05;
+    g.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(b.x - dir[0]*ah*2, b.y - dir[1]*ah*2, b.z - dir[2]*ah*2),
+      b,
+      new THREE.Vector3(b.x - dir[1]*ah, b.y + dir[0]*ah, b.z)
+    ]), lineMat(COL.lineBright, .0)));
+    const tail = new THREE.Vector3(b.x + (dir[0] >= 0 ? .1 : -.1), b.y, b.z);
+    g.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([b, tail]),
+      lineMat(COL.line, .0)));
+    const el = document.createElement('div');
+    el.className = 'cad-label';
+    el.textContent = text;
+    const obj = new CSS2DObject(el);
+    obj.position.copy(tail);
+    g.add(obj);
+    dimGroup.add(g);
+    return { g, lines: g.children.filter(c => c.isLine) };
+  }
+  const dimDefs = [
+    // tooth depths on the key blade (scene 1)
+    { a:[PIN_X[0]-.065, TOOTH[0], 0], dir:[0,1,0], len:.28, t:'1.20', win:[1,.15] },
+    { a:[PIN_X[2]+.065, TOOTH[2], 0], dir:[0,1,0], len:.42, t:'1.10', win:[1,.3] },
+    { a:[PIN_X[4]-.065, TOOTH[4], 0], dir:[0,1,0], len:.56, t:'0.75', win:[1,.45] },
+    // key head: profile length
+    { a:[-1.5, .07, 0], dir:[0,-1,0], len:.3, t:'60.0 mm', win:[1,.6] },
+    // cylinder diameter (scene 2)
+    { a:[0, .58, 0], dir:[1,0,0], len:.34, t:'⌀ 31.5', win:[2,.25] },
+    { a:[1.0, .36, 0], dir:[1,0,0], len:.5, t:'⌀ 19.8', win:[2,.45] },
+    // pin stack in cutaway (scene 3)
+    { a:[PIN_X[1], .62, 0], dir:[0,1,0], len:.62, t:'FEDER 0.29', win:[3,.2] },
+    { a:[PIN_X[3], TOOTH[3], 0], dir:[-1,0,0], len:.4, t:'0.85', win:[3,.5] },
+  ];
+  dims = dimDefs.map(d => ({ ...makeDim([d.a[0], d.a[1], d.a[2]], d.dir, d.len, d.t), win:d.win }));
+
+  /* ---- BOM balloon callouts (numbered circles with leader lines, DIN ISO) ----
+     item 1 = key, item 2 = plug, item 3 = housing, item 4 = pin kit */
+  {
+    const defs = [
+      { n:'1', a:[1.6, .5, 0],  b:[2.15, .95, 0],  win:[1, .3] },   // key head
+      { n:'2', a:[.8, -.4, .3], b:[1.35, -1.05, 0],win:[2, .5] },   // plug
+      { n:'3', a:[-.7, .62, .4],b:[-1.5, 1.3, 0],  win:[3, .25] },  // housing
+      { n:'4', a:[0, .75, 0],   b:[.85, 1.6, 0],   win:[3, .55] },  // pin kit
+    ];
+    for (const d of defs){
+      const g = new THREE.Group();
+      g.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(...d.a), new THREE.Vector3(...d.b)
+      ]), lineMat(COL.line, .0)));
+      const el = document.createElement('div');
+      el.className = 'cad-label bom';
+      el.textContent = d.n;
+      const obj = new CSS2DObject(el);
+      obj.position.set(d.b[0], d.b[1], d.b[2]);
+      g.add(obj);
+      dimGroup.add(g);
+      bomCalls.push({ g, el, lines: g.children.filter(c => c.isLine), win: d.win });
+    }
+  }
+
+  /* ---- live ordinate readout label riding the key head (X/Y mm, scene 1) ---- */
+  {
+    const el = document.createElement('div');
+    el.className = 'cad-label dim';
+    el.textContent = 'X +00.00 · Y +00.00';
+    el.style.opacity = '0';
+    const obj = new CSS2DObject(el);
+    obj.position.set(1.95, .28, 0);
+    scene.add(obj);
+    keyPosLbl = el;
+  }
+
+  /* ---- drawing sheet title block (CSS2D, bottom-right of sheet) ---- */
+  {
+    const tb = document.createElement('div');
+    tb.className = 'cad-label titleblock';
+    tb.innerHTML = 'SCHLÜSSEL GmbH · ZEICHNUNG Nr. SK-1985-05<br>MASSSTAB 5:1 · BLATT 1/1';
+    arcLabel = tb;
+    const tbObj = new CSS2DObject(tb);
+    tbObj.position.set(4.42, -2.42, -2.59);
+    scene.add(tbObj);
+  }
+
+  /* ---- arc angle label "−90°" (CSS2D at mid-arc) ---- */
+  {
+    const al = document.createElement('div');
+    al.className = 'cad-label dim';
+    al.textContent = '−90°';
+    al.style.opacity = '0';
+    const alObj = new CSS2DObject(al);
+    alObj.position.set(0, .12, .8);
+    scene.add(alObj);
+    window.__arcLbl = al;
+  }
+
+  /* ---- sheet zone letters (A/B/1/2 grid references, like DIN drawing sheets) ---- */
+  {
+    const zoneDefs = [
+      ['1', -3.0, 2.55], ['2', 0, 2.55], ['3', 3.0, 2.55],
+      ['A', -4.25, 1.4], ['B', -4.25, 0], ['C', -4.25, -1.4]
+    ];
+    for (const [ch, zx, zy] of zoneDefs){
+      const el = document.createElement('div');
+      el.className = 'cad-label zone';
+      el.textContent = ch;
+      const o = new CSS2DObject(el);
+      o.position.set(zx, zy, -2.59);
+      scene.add(o);
+      sheetMats.push({ _zone: el }); // track for fade
+    }
+  }
+
+  /* ---- measure ticks on the blade bottom (ruler style) ---- */
+  const tickPts = [];
+  for (let x = -1.5; x <= .9; x += .1){
+    tickPts.push(new THREE.Vector3(x, -.03, 0), new THREE.Vector3(x, -.06, 0));
+  }
+  tickMat = lineMat(COL.line, .0);
+  keyGroup.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(tickPts), tickMat));
+  // major ticks every 0.5
+  const tickMaj = [];
+  for (let x = -1.5; x <= .9; x += .5){
+    tickMaj.push(new THREE.Vector3(x, -.03, 0), new THREE.Vector3(x, -.1, 0));
+  }
+  tickMajMat = lineMat(COL.lineBright, .0);
+  keyGroup.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(tickMaj), tickMajMat));
+
+  addEventListener('resize', () => {
+    camera.aspect = innerWidth/innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(innerWidth, innerHeight);
+    labelRenderer && labelRenderer.setSize(innerWidth, innerHeight);
+  });
+} else {
+  document.body.classList.add('no-webgl');
+}
+
+/* ================================================================
+   CAMERA — pure f(P)
+   ================================================================ */
+const ORBIT_END = [3.34, .6, -3.98];
+const camTarget = { pos:[0,1.4,9.5], look:[0,.5,0], fov:40, shimmy:0 };
+
+function camAt(P){
+  let i = 0; for (let j = 0; j < 6; j++) if (P >= B[j]) i = j;
+  const span = (i < 5 ? B[i+1] : 1) - B[i];
+  const t = clamp01((P - B[i]) / span);
+  let pos, look, fov = 40, shimmy = 0;
+  const s45 = (i === 4) ? span : (B[5]-B[4]);
+  const zW0 = B[4] + .25*(B[5]-B[4]), zW1 = B[4] + .34*(B[5]-B[4]);
+
+  switch(i){
+    case 0: pos = [0,.8,6.2]; look = [0,.5,0]; break;
+    case 1: {
+      const a = smooth(t) * 140 * Math.PI/180;
+      const r = lerp(6.2, 5.2, clamp01(t*5));
+      pos = [Math.sin(a)*r, lerp(.8,.6,clamp01(t*5)), Math.cos(a)*r];
+      look = [0,.5,0];
+      break;
+    }
+    case 2:
+      pos = t < .32 ? lerp3(ORBIT_END, [0,.6,3.4], smooth(t/.32)) : lerp3([0,.6,3.4], [.6,.2,2.2], smooth((t-.32)/.68));
+      look = lerp3([0,.5,0], [0,.1,0], smooth(t));
+      break;
+    case 3:
+      pos = t < .45 ? lerp3([.6,.2,2.2], [2.8,.4,2.6], smooth(t/.45)) : [2.8,.4,2.6];
+      look = [0,.15,0];
+      break;
+    case 4: {
+      pos = t < .18 ? lerp3([2.8,.4,2.6], [0,.3,2.4], smooth(t/.18)) : [0,.3,2.4];
+      look = [0,.1,0];
+      fov = 40 - 3*Math.sin(Math.PI * phase(P, zW0, zW1));
+      shimmy = 1 - phase(P, zW0, zW1);
+      break;
+    }
+    case 5:
+      pos = t < .4 ? lerp3([0,.3,2.4], [0,.6,6.8], smooth(t/.4)) : lerp3([0,.6,6.8], [-2.2,1,7.4], smooth((t-.4)/.6));
+      look = lerp3([0,.1,0], [-1.5,.5,0], smooth(t));
+      break;
+  }
+  void s45;
+  return { pos, look, fov, shimmy };
+}
+
+/* ================================================================
+   HOLOGRAM STATE — pure f(P)
+   ================================================================ */
+const state = { pinSet:[0,0,0,0,0] };
+
+function sceneStateAt(P){
+  const s23 = B[3]-B[2], s34 = B[4]-B[3], s45 = B[5]-B[4];
+  const klickS = B[4] + .219*s45, klickE = B[4] + .25*s45;
+  const ex = smooth(phase(P, B[5], B[5]+.45*(1-B[5])));  /* key: visible from title (materialized during intro), dims at KLICK */
+  const f1 = 1;                                                    // key present from start
+  const f2 = phase(P, B[2]+.05*s23, B[2]+.3*s23);                  // dive away
+  let kOp = f1;
+  let keyY = .45, keyX = 0, keyTiltZ = 0;
+  if (f2 > 0){ keyY = lerp(.45, 2.3, f2); keyTiltZ = lerp(0, -.4, f2); }
+  const r1 = phase(P, B[3], B[3]+.3*s34);
+  const r2 = phase(P, B[3]+.3*s34, B[3]+.75*s34);
+  /* key slides in EXACTLY on the lock axis (keyY=0): blade body (y -.15..0
+     local) sits inside the keyway (y -.15..0), teeth (y 0..TOOTH) rise into
+     the pin chambers. Lock axis = shear line = rotation axis of KLICK. */
+  if (r1 > 0){ keyY = lerp(keyY, 0, r1); keyTiltZ = lerp(keyTiltZ, 0, r1); }
+  /* true insertion: blade (local x -.85..+.9) ends flush at the plug face
+     (x=+1.0 world) ? key rests at keyX=+.1. Approach from x=2.5. */
+  if (r2 > 0) keyX = lerp(2.5, .1, r2);
+  if (ex > 0){ keyX += ex*2.2; keyY += ex*1.4; }
+
+  /* KLICK: key+plug turn together about the lock axis (keyPivot rides the axis).
+     Then the key unwinds back to removal position and is PULLED OUT along the
+     axis — fully clear of the plug — before the assembly shrinks/dissolves. */
+  const unwind = smooth(phase(P, B[5]+.01*(1-B[5]), B[5]+.16*(1-B[5])));
+  const withdraw = smooth(phase(P, B[5]+.18*(1-B[5]), B[5]+.42*(1-B[5])));
+  const rot = easeInOutExpo(phase(P, klickS, klickE));
+  plugG.rotation.x = -Math.PI/2 * rot;
+  if (keyPivot) keyPivot.rotation.x = -Math.PI/2 * rot * (1 - unwind);
+  plugG.position.set(0, 0, 0);
+  /* full withdrawal along +X: back to approach distance, clear of the plug */
+  if (withdraw > 0){ keyX += withdraw*2.4; keyY += withdraw*.1; }
+
+  keyGroup.position.set(keyX, keyY, 0);
+  keyGroup.rotation.z = keyTiltZ;
+
+  /* cylinder opacity: appears in scene 2 (cutaway reveal) */
+  const cOp = phase(P, B[2]+.02*s23, B[2]+.25*s23);
+
+  /* pins */
+  let setSum = 0;
+  for (let i = 0; i < 5; i++){
+    const s = phase(P, B[3]+(.35+.08*i)*s34, B[3]+(.45+.08*i)*s34);
+    state.pinSet[i] = s; setSum += s;
+    const stack = pinStacks[i];
+    /* s=0: stack dropped — key pin pushed DOWN onto the tooth, driver crosses
+       the shear line (blocked). s=1: stack raised by the tooth depth — driver
+       bottom clears the shear line (rotation free). travel = TOOTH[i]. */
+    const shift = stack.userData.travel * (1-s);
+    stack.position.x = PIN_X[i];
+    stack.position.y = -shift + ex*(.4+.12*i);
+    stack.userData.spring.position.y = .62 + ex*(.55+.12*i);
+    stack.userData.spring.scale.y = clamp01((.29 + shift)/.29) * (1 - .18*klickState.v);
+    stack.userData.spring2.position.y = stack.userData.spring.position.y;
+    stack.userData.spring2.scale.y = stack.userData.spring.scale.y;
+  }
+  const avgSet = setSum/5;
+  const pinOp = (1 - .85*phase(P, klickS, klickE+.02*s45)) * (1-ex);
+
+  /* housing split in explode */
+  housingG.position.set(0, ex*.55, -ex*.25);
+
+  /* shear-line glow + KLICK bell */
+  const bell = Math.sin(Math.PI*phase(P, klickS, klickE+.05*s45));
+  const glowOp = Math.min(1, .8*avgSet*(1-ex) + .6*bell*(P>=klickS?1:0)) * Math.max(f1, cOp);
+
+  /* final dissolve: assembly fades to a faint ghost, freeing the stage for CTA */
+  const disEnd = 1 - .82*phase(P, B[5]+.55*(1-B[5]), B[5]+.92*(1-B[5]));
+
+  /* apply global opacities to holo mats by group membership */
+  setGroupOpacity(keyGroup, kOp * (1 - .7*phase(P, klickS, klickE+.03*s45)*(1-ex)) * disEnd);
+  setGroupOpacity(cylGroup, cOp * disEnd);
+  for (const st of pinStacks) setGroupOpacity(st, pinOp * cOp);
+  glowMat.opacity = glowOp;
+
+  /* KLICK shockwave + flash: expanding ring & screen flash at the klick instant */
+  if (shockwave){
+    const wT = clamp01((P - klickS) / (0.06*s45));
+    shockwave.material.opacity = wT < 1 ? (1-wT)*.9 : 0;
+    const ws = .5 + wT*6;
+    shockwave.scale.setScalar(ws);
+    shockwave.position.y = .1;
+    shockwave.visible = wT > 0 && wT < 1;
+  }
+  if (flashEl) flashEl.style.opacity = bell * .8;
+
+  /* scan plane: sweeps key in scene 1 */
+  const scanT = phase(P, B[1]+.15*(B[2]-B[1]), B[1]+.5*(B[2]-B[1]));
+  scanPlane.material.opacity = scanT > 0 && scanT < 1 ? .5 : 0;
+  scanPlane.position.set(lerp(-1.7, 1.8, scanT) + keyGroup.position.x, keyGroup.position.y + .12, 0);
+  scanPlane.rotation.z = .5;
+
+  /* explode: whole assembly shrinks & drifts left-up, freeing center for CTA.
+     No rotation — rotation.y swings the long key blade back INTO the cylinder volume. */
+  assembly.scale.setScalar(1 - .55*ex);
+  assembly.position.set(-ex*.8, ex*.9, 0);
+
+  /* projector rings: slow spin, brighten with assembly presence */
+  rings.rotation.y = perfTime*.15;
+  const pres = Math.max(f1, cOp)*(1-ex*.6);
+  rings.children.forEach(r => { r.material.opacity = r.material.userData.base * (0.35 + .65*pres); });
+  beam.material.opacity = .025 * pres;
+  beam.visible = pres > .05;
+
+  /* labels */
+  for (const L of cadLabels){
+    const [wi, wf] = L.d.win;
+    const a = B[wi] + wf*(wi<5?(B[wi+1]-B[wi]):0);
+    const b = wi+1 < 6 ? B[wi+1] : 1;
+    const o = Math.min(phase(P, a, a+.04), 1-phase(P, b-.06, b)) * pres;
+    L.el.style.opacity = o;
+    if (L.line) L.line.material.opacity = o * .8;
+  }
+
+  /* CAD dims: each with its own visibility window */
+  if (dimGroup){
+    const dimPres = Math.max(f1, cOp) * disEnd;
+    for (const D of dims){
+      const a = B[D.win[0]] + D.win[1]*(B[D.win[0]+1]-B[D.win[0]]);
+      const b = D.win[0]+1 < 6 ? B[D.win[0]+1] : 1;
+      const o = Math.min(phase(P, a, a+.05), 1 - phase(P, b-.06, b)) * dimPres;
+      for (const ln of D.lines) ln.material.opacity = o * (ln.material.color === COL.lineBright ? .95 : .7);
+      D.g.children.forEach(c => { if (c.isCSS2DObject) c.element.style.opacity = o; });
+    }
+  }
+
+  /* ruler ticks on blade: visible with key in scenes 1 & 3 */
+  if (tickMat){
+    const tickOp = Math.max(phase(P, B[1]+.1*(B[2]-B[1]), B[1]+.3*(B[2]-B[1])), r2*.9) * (1-ex) * disEnd;
+    tickMat.opacity = tickOp * .5;
+    tickMajMat.opacity = tickOp * .8;
+  }
+
+  /* BOM balloons: numbered callouts with windows across scenes 1-3 */
+  if (bomCalls.length){
+    const bomPres = Math.max(f1, cOp) * disEnd;
+    for (const BC of bomCalls){
+      const a = B[BC.win[0]] + BC.win[1]*(B[BC.win[0]+1]-B[BC.win[0]]);
+      const b = BC.win[0]+1 < 6 ? B[BC.win[0]+1] : 1;
+      const o = Math.min(phase(P, a, a+.05), 1 - phase(P, b-.06, b)) * bomPres;
+      for (const ln of BC.lines) ln.material.opacity = o * .65;
+      BC.el.style.opacity = o;
+    }
+  }
+
+  /* live ordinate label on the key head (scene 1 only): X/Y in mm */
+  if (keyPosLbl){
+    const ordIn = phase(P, B[1]+.1*(B[2]-B[1]), B[1]+.3*(B[2]-B[1]));
+    const ordOut = 1 - phase(P, B[1]+.8*(B[2]-B[1]), B[1]+.95*(B[2]-B[1]));
+    const o = Math.min(ordIn, ordOut) * f1 * (1-ex);
+    // head local (1.32,.07) → key coords; spin group rotates y by φ
+    const phi = spinGroup ? spinGroup.rotation.y : 0;
+    const hx = 1.32*Math.cos(phi) - .07*Math.sin(phi) + keyGroup.position.x;
+    const hy = 1.32*Math.sin(phi) + .07*Math.cos(phi) + keyGroup.position.y;
+    const mm = 24.5; // world→mm scale for the readout
+    keyPosLbl.textContent = `X ${(hx*mm).toFixed(1).padStart(5,'0')} · Y ${((hy-.5)*mm).toFixed(1).padStart(5,'0')}`;
+    keyPosLbl.style.opacity = o * .9;
+  }
+
+  /* measurement cursor ring on the projector: sweeps with scroll, brightens in scenes 1-2 */
+  if (measRing){
+    const mIn = Math.max(phase(P, B[1], B[1]+.15*(B[2]-B[1])), phase(P, B[2], B[2]+.2*s23)*.8);
+    const mOut = 1 - phase(P, B[2]+.55*s23, B[2]+.8*s23);
+    const mo = Math.min(mIn, mOut) * (1-ex) * disEnd;
+    measRing.rotation.y = perfTime*.12 + P*4.5;
+    for (const mm2 of measRingMats) mm2.opacity = mo * mm2.userData.base * 12;
+    measRing.visible = mo > .01;
+  }
+
+  /* data motes: rise inside the projector column, fade with assembly presence */
+  if (motes && !RM){
+    const mArr = motes.geometry.getAttribute('position');
+    const spd = motes.userData.spd;
+    for (let i = 0; i < spd.length; i++){
+      let y = mArr.getY(i) + spd[i]*.008;
+      if (y > 1.9) y = -1.3;
+      mArr.setY(i, y);
+    }
+    mArr.needsUpdate = true;
+    motes.material.opacity = .5 * pres * disEnd;
+    motes.visible = pres > .05 && disEnd > .3;
+  }
+
+  /* CAD selection bounding box: appears with the cutaway, lives through KLICK */
+  if (bboxGroup){
+    const bIn = phase(P, B[2]+.1*s23, B[2]+.3*s23);
+    const bOut = 1 - phase(P, B[4]+.3*s45, B[4]+.5*s45);
+    const bo = Math.min(bIn, bOut) * disEnd;
+    for (const bm2 of bboxMats) bm2.opacity = bo * .55;
+    bboxGroup.visible = bo > .01;
+  }
+
+  /* center axis: dash-dot drawing convention, scene 2+ */
+  if (axisLine){
+    axisMat.opacity = cOp * .5 * disEnd;
+    axisLine.visible = axisMat.opacity > .01;
+  }
+
+  /* rotation arc: appears just before KLICK, sweeps with rotation, fades after */
+  if (klickArc){
+    const arcIn = phase(P, B[4]+.06*s45, B[4]+.18*s45);
+    const arcOut = 1 - phase(P, klickE+.04*s45, klickE+.14*s45);
+    klickArc.visible = arcIn > .01 && arcOut > .01;
+    arcMat.opacity = Math.min(arcIn, arcOut) * .85;
+    klickArc.rotation.x = -Math.PI/2 * Math.min(1, rot * 1.15); // arc sweeps slightly ahead of plug
+    const al = window.__arcLbl;
+    if (al){
+      al.style.opacity = Math.min(arcIn, arcOut) * (rot > .05 ? .9 : .45);
+    }
+  }
+
+  /* scene 1: key slow spin — holo presentation turntable */
+  if (spinGroup){
+    const spinT = phase(P, B[1]+.05*(B[2]-B[1]), B[1]+.55*(B[2]-B[1]));
+    const spinBack = phase(P, B[1]+.7*(B[2]-B[1]), B[1]+.95*(B[2]-B[1]));
+    spinGroup.rotation.y = (Math.sin(spinT*Math.PI) * -.55) * (1-spinBack);
+  }
+
+  /* contact shadow: breathes with assembly presence, follows key x */
+  if (shadowMesh){
+    shadowMat.opacity = .07 * pres * disEnd;
+    shadowMesh.position.x = keyGroup.position.x * .55;
+    shadowMesh.visible = shadowMat.opacity > .005;
+  }
+
+  /* insertion path guide: dashed line brightens as key approaches (scene 3) */
+  if (pathLine){
+    pathMat.opacity = r1 * .55 * (1-ex) * (1 - .7*phase(P, klickS, klickE));
+    pathLine.visible = pathMat.opacity > .01;
+  }
+
+  /* drawing sheet frame: fades in early, out before CTA */
+  if (sheetGroup){
+    const sheetOp = .5 * Math.min(phase(P, .001, .03), disEnd) * (1 - .5*ex);
+    for (const m2 of sheetMats) if (m2.isLineDashedMaterial || m2.isLineBasicMaterial || m2.isMeshBasicMaterial) m2.opacity = sheetOp;
+    sheetGroup.visible = sheetOp > .01;
+    if (arcLabel) arcLabel.style.opacity = sheetOp * 1.6 > .8 ? .8 : sheetOp * 1.6;
+    // zone letters fade with sheet
+    for (const m3 of sheetMats) if (m3._zone) m3._zone.style.opacity = sheetOp * 1.6;
+  }
+
+  /* section plane lines A–A pulse in cutaway scene 2 + hatching fades with them */
+  if (secAMat){
+    const secT = Math.sin(perfTime*2.2)*.5+.5;
+    const secOp = cOp * (.25 + .3*secT) * (1 - phase(P, B[3], B[3]+.1*s34)) * disEnd;
+    secAMat.opacity = secOp; secBMat.opacity = secOp;
+    if (hatchMat) hatchMat.opacity = secOp * .8;
+  }
+
+  /* ---- living background choreography ----
+     each prop owns a scene window and its own idle motion */
+  {
+    const bgBase = Math.max(.25, pres) * disEnd;   // never fully dead, breathes with the hologram
+    // orbital sensor swarm: scenes 0-1 (+ faint through 2)
+    if (bgOrbit){
+      const oIn = 1 - phase(P, B[2], B[2]+.08*s23);
+      const oK = Math.max(oIn*.9, .12) * bgBase;
+      bgOrbit.rotation.y = perfTime*.07;
+      for (const o of bgOrbit.children){
+        const a = o.userData.a0 + perfTime*(.22 + o.userData.r*.05);
+        o.userData.sat.position.set(Math.cos(a)*o.userData.r, 0, Math.sin(a)*o.userData.r);
+      }
+      bgFade(bgOrbit, oK);
+    }
+    // topo contours: cutaway + mechanism scenes
+    if (bgTopo){
+      const tIn = phase(P, B[2], B[2]+.12*s23) * (1 - phase(P, B[4], B[4]+.2*s45));
+      bgFade(bgTopo, tIn * bgBase);
+    }
+    // workshop gears: scenes 2-4, meshing rotation
+    if (bgGears){
+      const gIn = phase(P, B[2], B[2]+.15*s23) * (1 - phase(P, B[4]+.7*s45, B[4]+.9*s45));
+      bgGears.userData.g1.rotation.z = perfTime*.5;
+      bgGears.userData.g2.rotation.z = -perfTime*.5*(9/7) + Math.PI/7;
+      bgFade(bgGears, gIn * bgBase);
+    }
+    // signal arcs: always, phase-offset expanding rings from the emitter
+    if (bgArcs){
+      for (const ring of bgArcs.children){
+        const k = ring.userData.k;
+        const t = (perfTime*.28 + k/3) % 1;
+        ring.scale.setScalar(.3 + t*3.4);
+        ring.material.userData.base = .3*(1-t);
+        ring.material.opacity = .3*(1-t) * bgBase;
+      }
+    }
+    // skyline: title scene + finale return (visible immediately at P=0)
+    if (bgCity){
+      const cIn = Math.max((1 - phase(P, B[1]+.6*(B[2]-B[1]), B[2])), phase(P, B[5]+.3*(1-B[5]), B[5]+.55*(1-B[5])));
+      bgFade(bgCity, Math.max(.25, cIn) * Math.max(.35, pres) * disEnd);
+    }
+  }
+}
+let perfTime = 0;
+
+/* set opacity multiplier on all holo materials under root */
+function setGroupOpacity(root, k){
+  root.traverse(o => {
+    if (o.material && o.material.userData && o.material.userData.base !== undefined){
+      o.material.opacity = o.material.userData.base * k;
+    }
+  });
+}
+
+/* ================================================================
+   DOM ACTIVATION
+   ================================================================ */
+const revealed = new WeakSet();
+const io = new IntersectionObserver(entries => {
+  for (const en of entries){
+    if (en.isIntersecting && !revealed.has(en.target)){
+      revealed.add(en.target);
+      en.target.classList.add('is-in');
+      if (en.target.matches('h2[data-words]')) revealWords(en.target);
+      const h = en.target.querySelector('h2[data-words]');
+      if (h) revealWords(h);
+    }
+  }
+}, { threshold: 0.2 });
+document.querySelectorAll('.reveal, h2[data-words]').forEach(el => io.observe(el));
+
+function activateDOM(P){
+  let cur = 0;
+  for (let j = 0; j < 6; j++) if (P >= B[j]-.004) cur = j;
+  document.querySelectorAll('.rail a').forEach(a => a.classList.toggle('cur', +a.dataset.rail === cur));
+  document.querySelector('.cta-box')?.classList.toggle('hint', P > .82);
+  document.getElementById('hudCoords')?.classList.toggle('on', P > .005 && P < .985);
+  document.getElementById('hudCross')?.classList.toggle('on', P > .05 && P < .8);
+  // BOM panel: visible during blueprint scenes 1-3, active row follows the scene
+  const bp = document.getElementById('bomPanel');
+  if (bp){
+    bp.classList.toggle('on', P > B[1] && P < B[4]);
+    bp.querySelectorAll('.bp-r').forEach(r => r.classList.toggle('cur', +r.dataset.n - 1 === Math.min(cur, 3)));
+  }
+}
+
+function splitWords(el){
+  if (el.dataset.split) return;
+  el.dataset.split = '1';
+  const walk = node => {
+    [...node.childNodes].forEach(n => {
+      if (n.nodeType === 3){
+        const frag = document.createDocumentFragment();
+        n.textContent.split(/(\s+)/).forEach(part => {
+          if (!part) return;
+          if (/^\s+$/.test(part)){ frag.appendChild(document.createTextNode(' ')); return; }
+          const w = document.createElement('span'); w.className = 'wm';
+          const inner = document.createElement('span'); inner.className = 'wm-w'; inner.textContent = part;
+          w.appendChild(inner); frag.appendChild(w);
+        });
+        node.replaceChild(frag, n);
+      } else if (n.nodeType === 1) walk(n);
+    });
+  };
+  walk(el);
+}
+function revealWords(el){
+  if (RM) return;
+  splitWords(el);
+  gsap.to(el.querySelectorAll('.wm-w'), { y:0, duration:.9, ease:'power4.out', stagger:.045, overwrite:'once' });
+}
+document.querySelectorAll('h2[data-words]').forEach(splitWords);
+if (!RM) gsap.set('h2[data-words] .wm-w, #heroH1 .wm-w', { y:'112%' });
+
+/* ================================================================
+   SOUND
+   ================================================================ */
+let actx = null, master = null, soundOn = false, humNodes = null;
+const noiseBuf = () => {
+  const b = actx.createBuffer(1, actx.sampleRate*.5, actx.sampleRate);
+  const d = b.getChannelData(0);
+  let last = 0;
+  for (let i = 0; i < d.length; i++){ const w = Math.random()*2-1; d[i] = (last + .02*w)/1.02; last = d[i]; d[i] *= 3.5; }
+  return b;
+};
+function initAudio(){
+  if (actx) return;
+  actx = new (window.AudioContext || window.webkitAudioContext)();
+  master = actx.createGain(); master.gain.value = .5; master.connect(actx.destination);
+}
+function sTick(){
+  if (!soundOn) return;
+  const t = actx.currentTime;
+  const src = actx.createBufferSource(); src.buffer = noiseBuf();
+  const bp = actx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 2200; bp.Q.value = 8;
+  const g = actx.createGain();
+  g.gain.setValueAtTime(.6, t); g.gain.exponentialRampToValueAtTime(.001, t+.05);
+  src.connect(bp).connect(g).connect(master); src.start(t); src.stop(t+.06);
+}
+function sKlick(){
+  if (!soundOn) return;
+  const t = actx.currentTime;
+  [[900,.28,.14],[2400,.22,.05]].forEach(([f,vol,dur])=>{
+    const o = actx.createOscillator(); o.type = 'sine'; o.frequency.value = f;
+    const g = actx.createGain();
+    g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.001, t+dur+.18);
+    o.connect(g).connect(master); o.start(t); o.stop(t+dur+.2);
+  });
+}
+function sDoor(){
+  if (!soundOn) return;
+  const t = actx.currentTime;
+  const o = actx.createOscillator(); o.type = 'sine';
+  o.frequency.setValueAtTime(70, t); o.frequency.exponentialRampToValueAtTime(45, t+.4);
+  const g = actx.createGain();
+  g.gain.setValueAtTime(.5, t); g.gain.exponentialRampToValueAtTime(.001, t+.42);
+  o.connect(g).connect(master); o.start(t); o.stop(t+.45);
+}
+function humStart(){
+  if (!soundOn || humNodes) return;
+  const src = actx.createBufferSource(); src.buffer = noiseBuf(); src.loop = true;
+  const lp = actx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 380;
+  const g = actx.createGain(); g.gain.value = 0;
+  const lfo = actx.createOscillator(); lfo.frequency.value = 28;
+  const lg = actx.createGain(); lg.gain.value = .05;
+  lfo.connect(lg).connect(g.gain);
+  g.gain.setValueAtTime(0, actx.currentTime);
+  g.gain.linearRampToValueAtTime(.08, actx.currentTime+.8);
+  src.connect(lp).connect(g).connect(master); src.start(); lfo.start();
+  humNodes = { src, lfo, g };
+}
+function humStop(){
+  if (!humNodes) return;
+  humNodes.g.gain.linearRampToValueAtTime(0, actx.currentTime+.5);
+  const h = humNodes; humNodes = null;
+  setTimeout(()=>{ try{ h.src.stop(); h.lfo.stop(); }catch(e){} }, 600);
+}
+const soundBtn = document.getElementById('soundBtn');
+soundBtn.addEventListener('click', () => {
+  initAudio(); actx.resume();
+  soundOn = !soundOn;
+  soundBtn.classList.toggle('on', soundOn);
+  soundBtn.setAttribute('aria-pressed', String(soundOn));
+  document.getElementById('soundLbl').textContent = soundOn ? 'TON AN' : 'TON AUS';
+  if (soundOn && P > B[1] && P < B[2]) humStart(); else humStop();
+});
+document.getElementById('ctaCall').addEventListener('click', sDoor);
+
+let prevP = 0;
+function soundEvents(P){
+  if (!soundOn){ prevP = P; return; }
+  const s34 = B[4]-B[3];
+  const klickS = B[4] + .219*(B[5]-B[4]);
+  for (let i = 0; i < 5; i++){
+    const th = B[3] + (.45+.08*i)*s34;
+    if (prevP < th && P >= th) sTick();
+  }
+  if (prevP < klickS && P >= klickS){
+    sKlick();
+    gsap.fromTo(klickState, { v:0 }, { v:1, duration:.55, ease:'elastic.out(1,0.5)' });
+  }
+  if (prevP < B[1] && P >= B[1]) humStart();
+  if (prevP < B[2] && P >= B[2]) humStop();
+  prevP = P;
+}
+
+/* ================================================================
+   MASTER SCROLLTRIGGER (single source of truth)
+   ================================================================ */
+let introDone = RM;
+ScrollTrigger.create({
+  trigger: '#story',
+  start: 'top top',
+  end: 'bottom bottom',
+  onUpdate: self => {
+    P = self.progress;
+    if (webgl && introDone){
+      const c = camAt(P);
+      camTarget.pos = c.pos; camTarget.look = c.look; camTarget.fov = c.fov; camTarget.shimmy = c.shimmy;
+    }
+    if (webgl) sceneStateAt(P);
+    activateDOM(P);
+    soundEvents(P);
+  }
+});
+ScrollTrigger.addEventListener('refresh', measure);
+
+/* ================================================================
+   RENDER LOOP
+   ================================================================ */
+const par = { yaw:0, pitch:0, ty:0, tp:0 };
+if (PARALLAX){
+  addEventListener('mousemove', e => {
+    par.ty = (e.clientX/innerWidth - .5) * 2 * (2.2*Math.PI/180);
+    par.tp = (e.clientY/innerHeight - .5) * 2 * (1.2*Math.PI/180);
+  });
+}
+let lastFov = 40;
+let hudLastP = -1;
+/* materialize draw-in progress for self-drawing lines (0→1 once, after boot) */
+let drawProg = RM ? 1 : 0;
+gsap.ticker.add((time) => {
+  perfTime = time;
+  if (webgl){
+    // advance draw-in over ~1.4s after intro hands off
+    if (drawProg < 1) drawProg = Math.min(1, drawProg + .012);
+    for (const d of drawLines){
+      const n = Math.floor(d.total * drawProg);
+      d.obj.geometry.setDrawRange(0, n);
+    }
+    const shimmy = camTarget.shimmy;
+    const sx = Math.sin(time*57)*.02*shimmy, sy = Math.cos(time*43)*.015*shimmy;
+    // handheld drift: tiny organic float, always on (cinematic breathing)
+    const hdx = Math.sin(time*.31)*.035 + Math.sin(time*.83)*.012;
+    const hdy = Math.cos(time*.24)*.028 + Math.sin(time*.61)*.01;
+    camera.position.set(camTarget.pos[0]+sx+hdx, camTarget.pos[1]+sy+hdy, camTarget.pos[2]);
+    camera.lookAt(...camTarget.look);
+    if (PARALLAX){
+      par.yaw = lerp(par.yaw, par.ty, .06);
+      par.pitch = lerp(par.pitch, par.tp, .06);
+      camera.rotateY(-par.yaw); camera.rotateX(-par.pitch);
+    }
+    if (Math.abs(camTarget.fov - lastFov) > .01){
+      camera.fov = camTarget.fov; camera.updateProjectionMatrix(); lastFov = camTarget.fov;
+    }
+    if (dust && !RM) dust.rotation.y = time*.06;
+    // HUD coordinates: technical readout of camera + progress (drawing-frame feel)
+    const hc = document.getElementById('hudCoords');
+    if (hc && P !== hudLastP){
+      hudLastP = P;
+      hc.innerHTML = `P <b>${P.toFixed(3)}</b>&nbsp;&nbsp;X <b>${camera.position.x.toFixed(2)}</b>&nbsp;&nbsp;Y <b>${camera.position.y.toFixed(2)}</b>&nbsp;&nbsp;Z <b>${camera.position.z.toFixed(2)}</b><br>SK 31.5/19.8 · 5-STIFT · ANSI-BHMA`;
+    }
+    renderer.render(scene, camera);
+    if (labelRenderer) labelRenderer.render(scene, camera);
+  }
+});
+
+/* ================================================================
+   INTRO — holo boot
+   ================================================================ */
+const intro = document.getElementById('intro');
+const bootMsgs = ['SYSTEM START…', 'PROJEKTOR KALIBRIEREN…', 'GEOMETRIE LADEN…', 'HOLOGRAMM AKTIV'];
+if (RM || !webgl){
+  intro.style.display = 'none';
+  if (webgl){ camera.position.set(0,.8,6.2); }
+  gsap.set('#heroH1 .wm-w', { y:0 });
+} else {
+  keyGroup.position.y = .45;
+  // start wireframe dim; materialize the key as the hologram boots
+  setGroupOpacity(keyGroup, 0);
+  setGroupOpacity(cylGroup, 0);
+  const tl = gsap.timeline({ defaults:{ ease:'power2.inOut' } });
+  tl.to('.loader-key path, .loader-key circle', { strokeDashoffset:0, duration:1.0, stagger:.05,
+      onStart(){ document.querySelectorAll('.loader-key path, .loader-key circle').forEach(p => {
+        const len = p.getTotalLength(); p.style.strokeDasharray = len; p.style.strokeDashoffset = len;
+      }); } })
+    .call(() => { document.getElementById('bootTxt').textContent = bootMsgs[1]; }, null, .9)
+    .call(() => { document.getElementById('bootTxt').textContent = bootMsgs[2]; }, null, 1.4)
+    .to('#loader', { opacity:0, duration:.35 }, 1.8)
+    .set(intro, { display:'none' }, 2.2)
+    .add(() => { introDone = true; }, 2.2)
+    .call(() => { document.getElementById('bootTxt').textContent = bootMsgs[3]; }, null, 2.0)
+    .to(camera.position, { x:0, y:.8, z:6.2, duration:1.4 }, 1.8)
+    // materialize key wireframe 0→1 right after aperture opens
+    .to({ v:0 }, { v:1, duration:.9, ease:'power2.out', onUpdate(){ setGroupOpacity(keyGroup, this.targets()[0].v); } }, 2.3)
+    .call(() => revealWords(document.getElementById('heroH1')), null, 2.7)
+    .to('.hero-sub, .hero-meta, .kicker', { opacity:1, y:0, duration:.7, stagger:.12,
+        onStart(){ document.querySelectorAll('.hero-sub, .hero-meta, .kicker').forEach(el => el.classList.add('is-in')); } }, 3.0);
+}
+
+/* ================================================================
+   Lenis anchors
+   ================================================================ */
+const lenis = new Lenis({ duration:1.15, smoothWheel:!RM });
+lenis.on('scroll', ScrollTrigger.update);
+gsap.ticker.lagSmoothing(0);
+gsap.ticker.add((time) => { lenis.raf(time * 1000); });
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const el = document.querySelector(a.getAttribute('href'));
+    if (!el) return;
+    e.preventDefault();
+    lenis.scrollTo(el, { offset:0 });
+  });
+});
+
+measure();
+document.fonts?.ready.then(() => ScrollTrigger.refresh());
+addEventListener('load', () => ScrollTrigger.refresh());
+</script>
+</body>
+</html>
